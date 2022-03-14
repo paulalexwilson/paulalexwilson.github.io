@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Linked Hierarchical Metadata Vocabulary</title>
+    <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
+    <script src="common/common.js" class="remove" defer></script>
+    <script class="remove">
+        // All config options at https://respec.org/docs/
+        var respecConfig = {
+            shortName: "lhm-vocab",
+            specStatus: "unofficial",
+            editors: [{
+                name: "Paul Wilson"
+            }],
+            xref: "web-platform",
+            subtitle: "A lightweight vocabulary for metadata storage and exchange",
+        };
+    </script>
+    <style type="text/css">
+        html {
+            background-image: none !important;
+        }
+
+        .hlist {
+            border: 1px solid navy;
+            padding: 5px;
+            background-color: #F4FFFF;
+        }
+
+        .hlist li {
+            display: inline;
+            display: inline-table;
+            list-style-type: none;
+            padding-right: 20px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #0a3;
+        }
+
+        .comment {
+            color: #999;
+        }
+
+        .illustration {
+            text-align: center;
+        }
+
+        #vocabulary-jsonld {
+            white-space: pre-wrap;
+        }
+
+        .example>pre.context:before {
+            content: "Context";
+            float: right;
+            font: x-large Arial, sans-serif;
+            color: gray;
+            border: solid thin black;
+            padding: 0.2em;
+        }
+
+        .example>pre.frame:before {
+            content: "Frame";
+            float: right;
+            font: x-large Arial, sans-serif;
+            color: gray;
+            border: solid thin black;
+            padding: 0.2em;
+        }
+
+        .example>pre.result:before {
+            content: "Result";
+            float: right;
+            font: x-large Arial, sans-serif;
+            color: gray;
+            border: solid thin black;
+            padding: 0.2em;
+        }
+
+        .example>pre.turtle:before {
+            content: "Turtle";
+            float: right;
+            font: x-large Arial, sans-serif;
+            color: gray;
+            border: solid thin black;
+            padding: 0.2em;
+        }
+
+        .highlight.changed,
+        .show-changes {
+            background-color: lime;
+        }
+
+        .show-changes.selected:before {
+            content: "de-highlight";
+        }
+
+        .show-changes:before {
+            content: "highlight";
+        }
+
+        aside.example {
+            overflow-y: hidden;
+        }
+
+        /* example tab selection */
+        .ds-selector-tabs {
+            padding-bottom: 2em;
+        }
+
+        .ds-selector-tabs .selectors {
+            padding: 0;
+            border-bottom: 1px solid #ccc;
+            height: 28px;
+        }
+
+        .ds-selector-tabs .selectors button {
+            display: inline-block;
+            min-width: 54px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            height: 27px;
+            padding: 0 8px;
+            line-height: 27px;
+            transition: all, 0.218s;
+            border-top-right-radius: 2px;
+            border-top-left-radius: 2px;
+            color: #666;
+            border: 1px solid transparent;
+        }
+
+        .ds-selector-tabs .selectors button:first-child {
+            margin-left: 2px;
+        }
+
+        .ds-selector-tabs .selectors button.selected {
+            color: #202020 !important;
+            border: 1px solid #ccc;
+            border-bottom: 1px solid #fff !important;
+        }
+
+        .ds-selector-tabs .selectors button:hover {
+            background-color: transparent;
+            color: #202020;
+            cursor: pointer;
+        }
+
+        .ds-selector-tabs pre:not(.preserve),
+        .ds-selector-tabs table:not(.preserve) {
+            display: none;
+        }
+
+        .ds-selector-tabs pre.selected,
+        .ds-selector-tabs table.selected {
+            display: block;
+        }
+
+        a.playground {
+            display: inline-block;
+            width: 150px;
+            border: 1px solid transparent;
+            border-top-right-radius: 2px;
+            border-top-left-radius: 2px;
+            background-color: rgb(192, 192, 192);
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        a[href].playground {
+            padding: 4px 0 3px 8px;
+            border-bottom: none;
+            text-decoration: none;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <p class="copyright">Copyright ...</p>
+    <section id="abstract">
+        <p>LHDv is a vocabulary for the storage and exchange of linked metadata providing
+            first class support for content hierarchies, navigation, schemas and versioning.
+        </p>
+    </section>
+    <section id="sotd">
+
+    </section>
+    <section class="informative">
+        <h2>Introduction</h2>
+        <p>
+            The Linked Hierarchical Metadata (LHM) model addresses a number of
+            challenges that organisations face when processing, storing and
+            exchanging structured metadata. This specification provides a vocabulary
+            for the representation of LHM models illustrated using JSON-LD.
+        </p>
+    </section>
+    <section class="informative">
+        <h2>LHMv at a Glance</h2>
+        <section>
+            <h3>Example LHMv Document</h3>
+            <p>
+                LHMv provides a vocabulary to describe metadata graphs consisting of nodes,
+                properties and references. Nodes represent metadata resources, properties
+                hold the data on those resources and references connect together related
+                nodes. Let's take a look at a single, isolated node:
+            </p>
+            <aside class="example ds-selector-tabs" title="Example LHMv Document">
+                <div class="selectors">
+                    <button class="selected" data-selects="compacted">JSON-LD (Compact)</button>
+                    <a class="playground" target="_blank" href="">PG</a>
+                </div>
+                <pre class="compacted selected nohighlight" data-transform="updateExample">
+                <!--{
+                  "@context": {
+                      "acme": "http://acme.com/content/ns/"
+                  },
+                  "@id": "http://acme.com/content/ids/1",
+                  "@type": "http://acme.com/content/types/SimpleNodetype",
+                  "lhm:created": "2022-03-13T17:12:26Z",
+                  "lhm:lastModified": "2022-03-13T18:12:26Z",
+                  "lhm:versionable": true,
+                  "lhm:versionHistory": "http://acme.com/version/1", 
+                  "lhm:schemas": [ "http://acme.com/schema/1" ],
+                  "lhm:title": "My Node Title",
+                  "lhm:parent": "http://acme.com/content/ids/0",
+                  "lhm:children": [
+                     {
+                         "http://acme.com/content/ids/2",
+                         "http://acme.com/content/ids/3"
+                     }
+                  ],
+                  "acme:genres": {
+                      "@set": ["acme:crime", "acme:drama"]
+                  }
+                }
+                -->
+                </pre>
+            </aside>
+            <p>
+                The example first illustrates that the <code>lhm</code> namespace provides structural
+                elements of a node such an identifier and type, references to children and parent nodes,
+                as well as references to the schema and its version history. It also provides common
+                metadata elements such as <code>created</code> and <code>createdBy</code>, and an
+                indication as to whether the node is <code>versionable</code>.
+            </p>
+            <p>
+                The <code>acme:genres</code> property provides a JSON-LD <code>@set</code> of genres
+                for the node. You can see that metadata belonging to the LHMv vocabulary occupy a
+                separate namespace to metadata belonging to the application domain (i.e. <code>acme</code>).
+                Namespaces allow different sets of metadata to coexist in a single metadata resource
+                without the risk of collisions.
+            </p>
+        </section>
+    </section>
+    <section data-dfn-for="LHDv">
+        <h2>Vocabulary Specification</h2>
+
+        <section>
+            <h3 name="idAndType">Node Identity and Type (JSON-LD)</h3>
+            <p>LHMv uses IRIs (<a data-cite="RFC3987#section-2">Internationalized
+                    Resource Identifiers</a> as described in [[RFC3987]]) for unambiguous
+                identification of metadata model entities (including nodes, properties, types, schemas and so on).
+                The <code>@id</code> property uniquely identifies the Node and the
+                <code>@type</code> uniquely identifies the <i>primary type</i> of the node.
+            </p>
+            <aside class="example ds-selector-tabs" title="Node identifier and type">
+                <div class="selectors">
+                    <button class="selected" data-selects="compacted">JSON-LD (Compact)</button>
+                    <a class="playground" target="_blank" href="">PG</a>
+                </div>
+                <pre class="compacted selected nohighlight" data-transform="updateExample">
+                <!--{
+                  ****"@id": "http://acme.com/content/ids/12345-abcdef-67890-vwxyz"****,
+                  ####↑ Unique identifier for this node####
+                  ****"@type": "http://acme.com/content/types/SimpleNode"****,
+                  ####↑ Indicates the node's type####
+                }
+                -->
+                </pre>
+            </aside>
+            <p>
+                The <code>@id</code> given to a Node should be made universally unique by
+                assigning a namespace prefix that would preclude the identifier colliding
+                with other identifiers.
+            </p>
+            <p class="note">The <code>@id</code> and <code>@type</code> are provided by the
+                [[JSON-LD]] specification.</p>
+        </section>
+
+        <section>
+            <h3 name="parentChild">Parent & Child Relationships</h3>
+            <p>
+                A node may have a zero or one parent relationship as indicated by the
+                <code>lhm:parent</code> property. Resolving the parent reference will
+                result in a node with <code>lhm:children</code> set containing the
+                <code>@id</code> of this node.
+            </p>
+            <aside class="example ds-selector-tabs" title="Parent & child references">
+                <div class="selectors">
+                    <button class="selected" data-selects="compacted">JSON-LD (Compact)</button>
+                    <a class="playground" target="_blank" href="">PG</a>
+                </div>
+                <pre class="compacted selected nohighlight" data-transform="updateExample">
+                <!--{
+                  "@id": "http://acme.com/content/ids/12345-abcdef-67890-vwxyz",
+                  "@type": "http://acme.com/content/types/SimpleNode",
+                  ****"lhm:parent": "http://acme.com/content/ids/0",****
+                  ####↑ Reference to this node's parent####
+                  ****"lhm:children": [
+                         "http://acme.com/content/ids/2",
+                         "http://acme.com/content/ids/3"
+                  ],****
+                  ####↑ References to a @set of children references####
+                -->
+                </pre>
+            </aside>
+            <p>
+                Systems may choose to expose additional metadata about referenced
+                nodes using <code>@annotation</code>. Indicating the <code>lhd:primaryType</code>
+                and <code>lhd:hasChildren</code> may for example provide sufficient metadata to
+                support the rendering of user-interface widgets.
+            </p>
+            <aside class="example ds-selector-tabs" title="Additional child and parent metadata annotations">
+                <div class="selectors">
+                    <button class="selected" data-selects="compacted">JSON-LD (Compact)</button>
+                    <a class="playground" target="_blank" href="">PG</a>
+                </div>
+                <pre class="compacted selected nohighlight" data-transform="updateExample">
+                <!--{
+                  ####...####
+                  "lhm:parent": {
+                      "@value": "http://acme.com/content/ids/0",
+                      ****"@annotation": {
+                          "lhm:primaryType": "acme:SimpleNodetype"
+                      }****
+                      ####↑ Indicates the type of the referenced parent node####
+                  },
+                  "lhm:children": [
+                    {
+                      "@value": "http://acme.com/content/ids/2",
+                      ****"@annotation": {
+                          "lhm:primaryType": "acme:ComplexNodetype",
+                          "lhm:hasChildren": true
+                      }****
+                      ####↑ Indicates the type of the referenced child node and if it has children####
+                  }],
+                }
+                -->
+                </pre>
+            </aside>
+        </section>
+
+        <section>
+            <h3 name="standardisedMetadata">Standardised Metadata Properties</h3>
+            <p>
+                Standardised metadata...
+            </p>
+            <aside class="example ds-selector-tabs" title="Standardised metadata properties">
+                <div class="selectors">
+                    <button class="selected" data-selects="compacted">JSON-LD (Compact)</button>
+                    <a class="playground" target="_blank" href="">PG</a>
+                </div>
+                <pre class="compacted selected nohighlight" data-transform="updateExample">
+                <!--
+                  ####...####
+                  "lhm:created": "2022-03-13T17:12:26Z",
+                  "lhm:createdBy": "2022-03-13T17:12:26Z",
+                  "lhm:lastModified": "2022-03-13T18:12:26Z",
+                  "lhm:lastModifiedBy": "2022-03-13T18:12:26Z",
+                  "lhm:title": "Node Title",
+                  "lhm:description": "Longer form"
+                  ""
+                -->
+                </pre>
+            </aside>
+        </section>
+
+        <section>
+            <h3 name="Internationalization">Internationalized metadata</h3>
+            <p>
+                Internationalized metadata...
+            </p>
+            <aside class="example ds-selector-tabs" title="Internationalized metadata properties">
+                <div class="selectors">
+                    <button class="selected" data-selects="compacted">JSON-LD (Compact)</button>
+                    <a class="playground" target="_blank" href="">PG</a>
+                </div>
+                <pre class="compacted selected nohighlight" data-transform="updateExample">
+                <!--
+                  ####...####
+                  
+                  ""
+                -->
+                </pre>
+            </aside>
+        </section>
+
+</body>
+
+</html>
