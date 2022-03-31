@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Hierarchical Metadata Framework v1.0</title>
+    <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
+    <script src="../common/common.js" class="remove" defer></script>
+    <script class="remove">
+        // All config options at https://respec.org/docs/
+        var respecConfig = {
+            shortName: "HMF Model",
+            specStatus: "unofficial",
+            editors: [{
+                name: "Paul Wilson"
+            }, {
+                name: "David Clark"
+            }],
+            xref: "web-platform",
+            subtitle: "An abstract model for hierarchical metadata management and storage",
+        };
+    </script>
+    <style src="../common/style.css" type="text/css"></style>
+    <style type="text/css">
+        .illustration {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <p class="copyright">Copyright ...</p>
+    <section id="abstract">
+        <p>
+        </p>
+    </section>
+    <section id="sotd">
+        <p>This document is in Draft state.</p>
+
+    </section>
+    <section class="normative">
+        <h2>Terminology</h2>
+        <div data-include="../common/terms.html" data-oninclude="restrictReferences"></div>
+    </section>
+
+    <section class="information">
+        <h1 id="introduction">Introduction</h1>
+
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> provides a rich foundation for the storage
+            and management of hierarchical metadata. The overall design goal is to offer a general and comprehensive
+            framework for metadata management including data representation & storage, editing & merging,
+            access control, versioning, validation, consistency, and so on. <abbr
+                title="Hierarchical Metadata Framework">HMF</abbr> was conceived as a foundational model for
+            <em>content</em> modelling, curation and delivery, but was designed to have broader application to
+            any domain where metadata is primarily hierarchical.
+        </p>
+
+        <p>
+            This document provides the <em>abstract</em> model for <abbr
+                title="Hierarchical Metadata Framework">HMF</abbr>, defining structure and semantics
+            independent of any particular representation, encoding or concrete syntax. This separation allows for
+            concrete vocabularies to be defined external to this document each providing their own model representation
+            for metadata interchange and delivery.
+        </p>
+
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> is best suited to metadata with the following
+            characteristics:
+        </p>
+
+        <ul>
+            <li>Consists of <a>entities</a> that are often arranged into <i>parent-child</i>
+                <a>relationships</a>
+                or where one <a>entity</a> is said to <i>contain</i> another, such as you might find
+                in content management applications, folder/file structures, configuration hierarchies and
+                so on.
+            </li>
+            <li>Is subject to a <a>schema</a> constraining both the <em>data</em> and <em>structure</em>,
+                or has an evolving <a>schema</a>, or has a <a>schema</a> that is closely related to the
+                application domain.
+            </li>
+            <li>Consists of data created by or arriving from multiple sources, which must be managed, edited
+                or curated together
+            </li>
+            <li>Changes must be tracked such that historical versions of metadata state can be accessed or
+                referenced.
+            </li>
+        </ul>
+
+        <section class="informative">
+            <h2 id="key-concepts">Key Concepts</h2>
+            This section highlights some of the key ideas found in <abbr title="Hierarchical Metadata">HMF</abbr>.
+            <section>
+                <h3 id="nodes-trees">Hierarchical-Graph Hybrid Model</h3>
+
+                <p>
+                    <abbr title="Hierarchical Metadata">HMF</abbr> provides a modelling framework
+                    for metadata that fits naturally into a <a>tree</a> of <a>nodes</a>. The <a>tree</a>
+                    structure is convenient for organising information in such a way that related
+                    metadata can be explored, located, access controled, constrained, versioned,
+                    moved or deleted easily.
+                </p>
+
+                <p>
+                    <a>Trees</a> model sets of <em>one-to-many</em> relationships only. Although fine for some
+                    applications it's unlikely to be adequate for non-trivial metadata domains. <abbr
+                        title="Hierarchical Metadata">HMF</abbr> therefore allows <a>nodes</a> to reference
+                    arbitrary <a>nodes</a> irrespective of whether they share an ancestry. This allows for
+                    <em>many-to-many</em> relationships to be modelled within <abbr
+                        title="Hierarchical Metadata">HMF</abbr>. The following illustration shows <a>nodes</a>
+                    connected by both <a>tree</a> relationships and arbitrary relationships.
+                </p>
+
+                <div class="illustration">
+                    <p><img src="hybrid-graph-hierarchical.png" alt="Hybrid Graph Hierarchical Model" width="400" /></p>
+                    <p class="caption">Hybrid Graph Hierarchical Model</p>
+                </div>
+
+                <p>
+                    The result is a <i>hybrid-graph</i> model which benefits from first-class <a>tree</a>
+                    modelling without limiting which <a>nodes</a> may be related.
+                </p>
+
+            </section>
+
+            <section class="informative">
+                <h3 id="namespaces">Namespaces</h3>
+
+                <p>
+                    <a>Namespaces</a> separate data belonging to different domains or arriving from different
+                    sources into well-defined, recognisable and distinguishable groupings referenced using an
+                    <abbr title="Internationalized Resource Identifier">IRI</abbr>. In <abbr
+                        title="Hierarchical Metadata">HMF</abbr> both <a>nodes</a> and <a>properties</a>
+                    are namespaced meaning that structural and value elements of the model exist not only
+                    within the <a>tree</a> but also within a <a>namespace</a>.
+                </p>
+
+                <p>
+                    <a>Namespacing</a> allows for information belonging to different domains to coexist within
+                    within the same metadata <a>tree</a>. Consider a <a>tree</a> which is built from
+                    multiple ingest sources. With <a>namespaces</a>, we avoid naming collisions and can easily
+                    identify which data belongs to which source.
+                </p>
+
+                <p>
+                    In <abbr title="Hierarchical Metadata">HMF</abbr> all <a>nodes</a> and <a>properties</a>
+                    belong to a <a>namespace</a> which is identified using an <abbr
+                        title="Internationalized Resource Identifier">IRI</abbr>. Namespaces
+                    ensure that information stored in <abbr title="Hierarchical Metadata">HMF</abbr> is
+                    <em>recognisable</em> and <em>distinguishable</em>. <a>Namespaces</a> enable the following:
+                </p>
+
+                <ul>
+                    <li>Information arriving from multiple sources can be merged into a single <a>node</a> or
+                        <a>tree</a> without the risk of naming collisions. This is especially useful when metadata
+                        arrives or is edited upon from different sources.</li>
+                    <li>Since <a>namespaces</a> have a well-defined identifier (i.e. an <abbr
+                            title="Internationalized Resource Identifier">IRI</abbr>), software components such
+                        as plugins can easily distinguish </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 id="schemas">Schemas</h2>
+                <p>
+                    <abbr title="Hierarchical Metadata">HMF</abbr> uses <a>schemas</a> to enforce data
+                    validation, consistency and integrity. <a>Schemas</a> determine which <a>properties</a>
+                    are allowed on <a>nodes</a>, what datatypes those <a>properties</a> may have and
+                    which child <a>nodes</a> are permitted on a given <a>node</a>. <a>Schemas</a> therefore
+                    enforce both <i>data and structure</i>.
+                </p>
+
+                <p>
+                    <a>Schemas</a> are defined and stored within the model as regular <a>nodes</a>.
+                    This means that<i><a>schemas</a> are data</i> and can be exported, published and passed around
+                    alongside the data they constrain. This is a very powerful concept known as <a>metadata-defined
+                        schemas</a>.
+                </p>
+
+            </section>
+            <section>
+                <h2 id="versioning">Versioning</h2>
+
+                <p>
+                    <a>Nodes</a> can be marked as <a>versionable</a> meaning their historical state as well as
+                    the state of their versionable subtree can be accessed and restored. This also enables <a>nodes</a>
+                    to reference fixed-versions of a given <a>node</a> which can be especially useful in systems
+                    where data is frequently modified.
+                </p>
+
+            </section>
+        </section>
+    </section>
+    <section>
+        <h2 id="representation">Metadata Representation</h2>
+
+        <section>
+            <h3 id="nodes">Nodes</h3>
+            <p>
+                <a>Nodes</a> represent <a>entities</a> and provide the <i>structure</i> to data within the <abbr
+                    title="Hierarchical Metadata Framework">HMF</abbr> model. They provide
+                identity and type, as well as relationships to other <a>nodes</a>. It is through <a>nodes</a> that
+                content hierarchies are formed, with one <a>node</a> able to act as a <i>parent</i> or
+                <i>container</i> for another <a>node</a>.
+            </p>
+            <div class="illustration">
+                <p><img src="hmf-nodes.png" alt="Nodes" width="400" /></p>
+                <p class="caption">Nodes with parent and child relationships</p>
+            </div>
+            <p>
+                <a>Nodes</a> have a single <i>parent</i> relationship to their <i>parent</i> <a>node</a>, and
+                zero-or-more
+                <i>child</i> <a>nodes</a>.
+            </p>
+            <p>
+                A <i>child</i> is affected by its parent and ancestors in various ways. For example, <i>copy</i> and
+                <i>move</i> operations on a <a>node</a> will recursively copy the <a>node</a>'s descendents (see
+                [[[#move-copy]]]). Permissions applied within a <a>repository</a> to a parent will <i>cascade</i> to
+                descendents. The versioning strategy applied to a <a>node</a> will govern the <i>read-only</i> status
+                of a child when the parent is checked-in (see [[[#versioning-semantics]]]).
+            </p>
+            <p>
+                <a>Nodes</a> also act as a container for <a>properties</a> as described in [[[#properties]]].
+                All <a>nodes</a> carry a small set of mandatory properties (see [[[#mandatory-properties]]]).
+            </p>
+
+            <section>
+                <h3 id="node-names">Node Names</h3>
+                <p>
+                    Each <a>node</a> has a <a>name</a> used to locate the <a>node</a> among its siblings. The
+                    <a>node</a>
+                    <a>name</a> is used within <a>paths</a> to allow <a>nodes</a> to be located without knowing their
+                    <a>identity</a>. See [[[#names]]] for a full description of <a>names</a>.
+                </p>
+            </section>
+
+            <section>
+                <h3 id="node-identity">Node Identity</h3>
+                <p>
+                    Relying on a <a>path</a> to locate a <a>node</a> could be problematic when we consider that
+                    <a>nodes</a> can be moved. In cases where a <a>node</a> must be retrievable irrespective of
+                    its location in the hierarchy, we may rely instead on <a>node identity</a>.
+                </p>
+                <p>
+                    A <a>node</a> that can be retrieved using its <a>identity</a> is said to be <a>referenceable</a>.
+                    Storage systems would typically use an <a>index</a> to quickly locate a <a>referenceable</a>
+                    <a>node</a> within a <a>repository</a>. Maintaining such an index incurs a cost in terms of
+                    resources
+                    and performance as it would need to be stored and maintained within the storage system. It
+                    becomes therefore a <i>design choice</i> as to whether a given node should be <a>referenceable</a>.
+                </p>
+                <p>
+                    <a>Nodes</a> can be related to one another via <a>references</a> as described in
+                    [[[#references]]].
+                    <a>Node</a> <a>identity</a> is used to support <a>references</a> as only <a>nodes</a>
+                    that are <a>referenceable</a> can be referred to from a <a>node</a>.
+                </p>
+                <p>
+                    If a given <a>node</a> has the <i>mixin type</i> (see [[[#primary-mixin-types]]]) of
+                    <code>mixin:referenceable</code> then the <a>node</a> is <a>referenceable</a>.
+                    <a>Referenceable</a> <a>nodes</a> acquire the <a>property</a>
+                    <code>lhd:uuid</code> from the <code>mixin:referenceable</code> type which holds a universally
+                    unique
+                    <a>repository</a>-managed identifier.
+                    This identifier may be used outside of a <a>repository</a> to reference the <a>node</a> and
+                    acts as the <a>value</a> of <a>reference</a> <a>properties</a> (see [[[#references]]]).
+                </p>
+            </section>
+
+            <section>
+                <h3 id="mandatory-properties">Mandatory Properties</h3>
+                <p>
+                    All <a>nodes</a> contain the following mandatory <a>properties</a>:
+                    <table class="simple">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type <abbr title="Internationalized Resource Identifier">IRI</abbr></th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>hmf:primaryType</code></td>
+                                <td><code>type:string</code></td>
+                                <td>The <a>compact IRI</a> of a <a>node</a>'s primary type (see
+                                    [[[#primary-mixin-types]]])
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </p>
+            </section>
+            <section>
+                <h3 id="primary-mixin-types">Primary & Mixin Types</h3>
+                <p>
+
+                </p>
+            </section>
+        </section>
+
+
+        <section>
+            <h2 id="properties">Properties</h2>
+            <p>
+                <a>Properties</a> belong to <a>nodes</a> and hold the <i>data</i> or <a>values</a> associated with
+                that <a>node</a>. A <a>property</a> consists of a <a>name</a> as defined in [[[#names]]] and zero
+                or more <a>values</a> of a specific <a>type</a>.
+            </p>
+            <p>
+                The <a>type</a> of a <a>property</a> determines the range of <a>values</a> it can store and is defined
+                by
+                a <a>datatype IRI</a>. The following <i>standard</i> types are available, although a <a>repository</a>
+                may choose to support additional <a>types</a>:
+                <table class="simple">
+                    <thead>
+                        <tr>
+                            <th>Prefix</th>
+                            <th>Datatype <abbr title="Internationalized Resource Identifier">IRI</abbr></th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>string</td>
+                            <td>type:string</td>
+                            <td>A sequence of characters encoded as UTF-8</td>
+                        </tr>
+                        <tr>
+                            <td>boolean</td>
+                            <td>type:boolean</td>
+                            <td>The value of <code>true</code> or <code>false</code></td>
+                        </tr>
+                        <tr>
+                            <td>long</td>
+                            <td>type:long</td>
+                            <td>An integer with a minimum value of -2<sup>63</sup> and a maximum value of
+                                2^<sup>63-1</sup>.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>double</td>
+                            <td>type:double</td>
+                            <td>A double-precision 64-bit IEEE 754 floating point.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>decimal</td>
+                            <td>type:decimal</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>date</td>
+                            <td>type:date</td>
+                            <td>An [[ISO8601]] date</td>
+                        </tr>
+                        <tr>
+                            <td>weakreference</td>
+                            <td>type:weakreference</td>
+                            <td>An identifer to a referenceable node <i>without</i> enforced referential integrity.</td>
+                        </tr>
+                        <tr>
+                            <td>reference</td>
+                            <td>type:reference</td>
+                            <td>An identifer to a referenceable node <i>with</i> enforced referential integrity.</td>
+                        </tr>
+                        <tr>
+                            <td>uri</td>
+                            <td>type:uri</td>
+                            <td>A sequence of characters that conform to [[RFC3987]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </p>
+            <section>
+                <h3 id="mult-value-properties">Multi-value Properties</h3>
+                <p>
+                    Properties can either be <em>single-valued</em> or <em>multi-valued</em>.
+                </p>
+                <p>
+                    A single-value property, if it exists, must have a value. There is no such thing as a <em>null</em>
+                    value. A multi-value property can have zero or more values. Again there is no such thing as a null
+                    value, however a multi-value property can be empty, just as an array can be empty.
+                </p>
+                <p>
+                    Whether a particular property is a multi-valued property is governed by the property definition
+                    applicable to it, which is determined by the node type of the property's parent node (see
+                    [[[#node-types]]]).
+                </p>
+                <section>
+                    <h4 id="property-array-semantics">Array Semantics</h4>
+                    <p>
+                        The values stored within a multi-valued property are all of the same type. A multi-valued
+                        property
+                        by default has <em>array</em> semantics. That is, they are <em>ordered</em> and may contain
+                        <em>duplicate</em> values.
+                    </p>
+                </section>
+                <section>
+                    <h4 id="property-set-semantics">Set Semantics</h4>
+                    <p>
+                        A multi-value property can be declared to have <em>set</em> semantics. In this case, the
+                        property
+                        will only every contain unique values and there will be no defined ordering.
+                    </p>
+                </section>
+            </section>
+        </section>
+
+
+        <section>
+            <h2 id="names">Names &amp; Namespaces</h2>
+            <p>
+                <a>Names</a> in <abbr title="Hierarchical Metadata Framework">HMF</abbr> are conceptually the same as
+                <a>names</a> in [[XML]]. They consist of a <a>namespace IRI</a> (or the empty string in the case of
+                [[[#empty-namespace]]]) and a <a>local name</a>, and are written in their expanded form as
+                <code>{NAMESPACE}LOCAL_NAME</code>, for example:
+            </p>
+            <p>
+                <code>{http://hmf.org/ns/hmf/1.0}primaryType</code>
+            </p>
+            <p>
+                <code>NAMESPACE</code> is either the empty string <code>""</code> or a <a>namespace IRI</a> that
+                identifies the <a>namespace</a> and must be <em>registered</em> within the <abbr
+                    title="Hierarchical Metadata Framework">HMF</abbr> storage layer before it is used.
+            </p>
+            <p>
+                <a>Namespaces</a> are <em>registered</em> along with a <a>prefix</a> allowing <a>names</a> to be
+                written in their <em>compact</em> form; <code>PREFIX:LOCAL_NAME</code>, for example:
+            </p>
+            <p>
+                <code>hmf:primaryType</code>
+            </p>
+            <p>
+                The compact form of a <a>name</a> is commonly used, however a namespace mapping of <a>prefixes</a>
+                to <a>namespace IRIs</a> must be supplied.
+            </p>
+            <p>
+                <div class="note">
+                    <p>
+                        [[XML]] and [[RDF-CONCEPTS]] both use resource identifiers as names but in subtly different
+                        ways.
+                        In [[XML]] a name is an <em>ordered pair</em> consisting of a <a>namespace IRI</a> and a
+                        <a>local
+                            name</a>
+                        which is commonly written in the form <a>namespace</a>:<a>local name</a>. A <a>namespace IRI</a>
+                        must be formally <em>declared</em> before its corresponding <a>prefix</a> may be used and there
+                        is no explicit formal specification for how a pair should be treated or expressed.
+                    </p>
+                    <p>In contrast, [[RDF-CONCEPTS]] states that subjects are represented with an IRI which can be
+                        conveniently
+                        written as a <a>compact IRI</a> in the form <a>prefix</a>:<em>suffix</em>. In [[RDF-CONCEPTS]],
+                        this <a>compact IRI</a> can be expanded via simple concatentation to reveal the subject IRI,
+                        with
+                        no deterministic way to return to the <a>compact IRI</a> form.
+                    </p>
+                    <p> The absence of a formal definition
+                        of namespaces in [[RDF-CONCEPTS]] means that a document could contain overlapping prefixes where
+                        different <a>compact IRIs</a> expand to the same IRI during concatenation, thus mangling their
+                        namespaces.
+                    </p>
+                    <p>
+                        <abbr title="Hierarchical Metadata Framework">HMF</abbr> chooses to follow [[XML]] defining a
+                        <a>name</a> as an ordered pair and provides a <a>namespace registry</a> to map <a>prefixes</a>
+                        to their <a>namespace IRIs</a>. The result is that all <a>names</a> belong to a specific
+                        <a>namespace</a>.
+                    </p>
+                </div>
+            </p>
+        </section>
+        <section>
+            <h3>Local Name</h3>
+            <p>
+
+            </p>
+        </section>
+        <section>
+            <h3>Naming Restrictions</h3>
+
+            <p>
+                The characters declared invalid within a local name (“/”, “:”, “[“, “]”, “|”, “*”) represent only those
+                characters which are used as metacharacters in JCR names, paths and name-matching patterns (see §5.2.2
+                Iterating Over Child Items). These restrictions are not necessarily sufficient to enforce best practices
+                in
+                the creation of JCR names. In particular, the minimal grammar defined here permits JCR names with
+                leading
+                and trailing whitespace as well as characters which may appear superficially identical while
+                representing
+                different code points, creating a potential security issue.
+            </p>
+        </section>
+
+        <h3 id="empty-namespace">The Empty Namespace</h3>
+        <p>
+            For trivial or single-source metadata applications, enforcing a <a>namespace</a> could be overly
+            burdensome. <abbr title="Hierarchical Metadata Framework">HMF</abbr> provides a permanent <a>default
+                namespace</a> with prefix <code>""</code> (i.e. the empty string), also referred to as the
+            <a>empty namespace</a>. This allows <a>names</a> to omit the <a>prefix</a> and be located using their
+            <a>local name</a> only.
+        </p>
+
+
+        <h2>Relationships</h2>
+        <h3 id="parent-child-relationships">Parent-Child Relationships</h3>
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> has <i>first-class</i> support for
+            <i>parent-child</i>
+            relationships between <a>nodes</a>. Parent-child relationships have additional semantics beyond what are
+            provided for regular [[[#references]]]. For example, a child is considered to belong to its parent, meaning
+            that re-locating the parent also relocates the child. Versioning a parent in many cases will also version
+            the child. A parent's <a>type</a> may also enforce that it has a child with a given <a>name</a> and
+            <a>type</a>.
+        </p>
+        <p>
+            Parent-child relationships can be said to define the <a>tree</a> structure metadata.
+        </p>
+        <p>
+            <a>Trees</a> allow <a>paths</a> to be used to locate a <a>node</a>. <a>Paths</a> can only
+            be used to traverse <em>parent-child</em> relationships and do not apply to <a>references</a>.
+            <a>Nodes</a> can be referenced either using their identity or using their location as defined
+            by their <a>path</a> from the <a>root</a> to the <a>node</a>.
+        </p>
+        <p>
+            [[[#primary-child]]] allows clients to navigate through parent-child relationships without
+            knowing the names of the intermediate
+        </p>
+        <p>
+            First class support in type system (schemas can declare child types)
+        </p>
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> does not support <a>same name siblings</a>.
+            That is, all children must have a unique name.
+        </p>
+        <h3 id="references">References</h3>
+        <p>
+            * weak and strong references
+            * Reference
+            * Versioned Reference
+        </p>
+        <h3 id="primary-child">Primary Child</h3>
+        <p>
+            A [[[#node-type]]] can declare <em>one</em> of its children as primary, meaning that for all <a>nodes</a> of
+            that type, that child is accessible in a way that does not require the name of the item. Primary children
+            allow clients to traverse a <a>tree</a> without upfront knowledge of the <a>node</a> structure.
+        </p>
+        <p>
+            A client could for example know to traverse a <a>tree</a>&quot;s primary children until a <a>node</a> of
+            a given <a>type</a> or <a>name</a> is encountered. This would allow editors to modify a <a>tree</a>&quot;s
+            structure, perhaps be adding or removing intermediate nodes, without breaking the client.
+        </p>
+
+        <h2>Item Annotations</h2>
+        <p>
+            For a given node, all <a>items</a> (i.e. child <a>nodes</a> and <a>properties</a>) can themselves
+            have <a>properties</a>. This allows the <abbr title="Hierarchical Metadata Framework">HMF</abbr>
+            model to store so-called <em>statement-level metadata</em> capturing information about
+            metadata that is incidental or orthogonal to its <em>primary domain</em>. Popular use cases for
+            applying and statement-level metadata include certainty scores, weights, temporal
+            restrictions, permissions and provenance information.
+        </p>
+        <p>
+            <div class="note">
+                <p>The two popular graph-based data models have been RDF [[RDF11-CONCEPTS]] and
+                    <a href="https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph">Labeled-property
+                        Graphs</a>,
+                    which are roughly similar, with the RDF model being more formal in identifying <a>nodes</a>,
+                    datatypes and relationships, while Property Graphs
+                    use a less formal relationship model somewhat similar to JSON. In both models,
+                    nodes are related via edges (AKA arcs), but in Property Graphs,
+                    those edges may themselves be annotated with properties.
+                    This is useful in providing additional metadata and semantics to relationships
+                    of the <a>nodes</a>.
+                </p>
+                <p>
+                    <abbr title="Hierarchical Metadata Framework">HMF</abbr> takes a hybrid approach
+                    by providing a formal model for identifying information pertain to the <em>primary domain</em>
+                    whilst capturing <a>annotations</a>
+                </p>
+            </div>
+        </p>
+        <p>
+            Annotations are considered as part of a <a>node</a>&quot;s <a>versionable tree</a>.
+        </p>
+        <h3>Standard Annotations</h3>
+        <p>
+            * Collection semantics - array or set
+            * Created By
+            * Created
+            * Modified By
+            * Modified
+        </p>
+
+
+        <h2 id="paths">Paths</h2>
+        <section>
+            <h3>Identity Paths</h3>
+            <p>
+                All <a>items</a> can be located using a <a>path</a> which describes the location of that
+                <a>item</a> from the <a>root</a> via parent-child relationships. The <a>path</a> consists of the
+                <a>name</a> of each interceding <a>node</a> in order from root to target item, much like a
+                file system path.
+            </p>
+            <p>
+                Relative paths can also be used to describe the location of one item with respect to another.
+            </p>
+            <p>
+                <code>http://acme.org/ids/15247995-1f1d-4f91-893a-3893bce03243</code>
+            </p>
+            <p>
+                <code>http://acme.org/ids/15247995-1f1d-4f91-893a-3893bce03243#prefix:local_name</code>
+            </p>
+            <p>
+                <code>http://acme.org/ids/15247995-1f1d-4f91-893a-3893bce03243#%7Bhttp%3A%2F%2Fhmf.org%2Fns%7Dtitle</code>
+            </p>
+        </section>
+
+    </section>
+    <section>
+        <h2>Types</h2>
+        <section class="informative">
+            <h3>Introduction</h3>
+            <p>
+                <abbr title="Hierarchical Metadata Framework">HMF</abbr> uses types to characterise, categorise and
+                constrain <a>nodes</a> and <a>properties</a>. Crucially, types in HMF are stored as metadata alongside
+                the <a>trees</a> they are applied over. This means that type information can be administered and
+                delivered just like regular data.
+            </p>
+        </section>
+        <section>
+            <h3 id="node-type">Node Definition</h3>
+            <p>
+                sfsadf
+            </p>
+            <section>
+                <h4 id="">Child Constraints</h4>
+                <p>
+
+                </p>
+            </section>
+            <section>
+                <h4 id="child-constraints">Child Constraints</h4>
+                <p>
+
+                </p>
+            </section>
+            <section>
+                <h4>Type Composition</h4>
+                <p>
+                    Mixin Types
+                </p>
+            </section>
+            <section>
+                <h4>Node Type Documentation</h4>
+                <p>
+                    A <code>hmf:documentation</code> property may be added to a node type definition containing a
+                    <code>type:string</code> value.
+                </p>
+            </section>
+            <section>
+                <h4>Type Inheritance</h4>
+                <p>
+
+                </p>
+            </section>
+        </section>
+
+
+        <section>
+            <h3>Property Definition</h3>
+            <p>
+
+            </p>
+            <section>
+                <h4>Value Type</h4>
+                <p>
+
+                </p>
+            </section>
+            <section>
+                <h4>Property Documentation</h4>
+                <p>
+
+                </p>
+            </section>
+            <section>
+                <h4>Single & Multi-Valued Property</h4>
+                <p>
+
+                </p>
+            </section>
+            <section>
+                <h4>Value Ordering</h4>
+                <p>
+                    Multi-value properties can be declared as <em>arrays</em> or <em>sets</em>.
+                </p>
+            </section>
+        </section>
+        <section>
+            <h3>Default Values</h3>
+            <p>
+
+            </p>
+        </section>
+    </section>
+    </section>
+    <section>
+        <h2>Versioning</h2>
+        <h3>Versionable Nodes</h3>
+        <h3>Checked-in &amp; Checked-out</h3>
+        <h3>Versionable Subtree</h3>
+        <h3>On-Parent Version</h3>
+        <h3>Version History</h3>
+    </section>
+    <section>
+
+        <h2 id="repository">Repository</h2>
+        <section class="informative">
+            <h3>Introduction</h3>
+            <p>
+                A <a>repository</a> provides metadata container services to <abbr
+                    title="Hierarchical Metadata Framework">HMF</abbr>.
+            </p>
+        </section>
+
+        <section>
+            <h3>Repository Root</h3>
+            <p>
+
+            </p>
+        </section>
+
+        <section>
+            <h3 id="move-copy">Move & Copy Semantics</h3>
+            <p>
+
+            </p>
+        </section>
+
+        <section>
+            <h3 id="namespace-registry">Namespace Registry</h3>
+            <p>
+                The repository provides access to the <a>namespace registry</a> containing a mapping of
+                <a>prefixes</a> to their corresponding <a>namespace IRI</a>.
+            </p>
+            <section>
+                <h4>Default Mappings</h4>
+                <p>
+                    Repositories contain at least following mappings:
+                </p>
+                <table class="simple">
+                    <thead>
+                        <tr>
+                            <th>Namespace Prefix</th>
+                            <th>Namespace <abbr title="Internationalized Resource Identifier">IRI</abbr></th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>hmf</td>
+                            <td>http://hmf.org/ns/hmf/1.0</td>
+                            <td>Reserved for <a>items</a> defined within in core <abbr
+                                    title="Hierarchical Metadata Framework">HMF</abbr> <a>types</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <td>mix</td>
+                            <td>http://hmf.org/ns/mix/1.0</td>
+                            <td>Reserved for the <a>names</a> of built-in <a>mixin</a> <a>node</a> <a>types</a>.
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <td><em>the empty string</em></td>
+                            <td><em>the empty string</em></td>
+                            <td>The default namespace is the <em><a>empty namespace</a></em>.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </section>
+            <section>
+                <h4 id="empty-namespace">Empty Namespace</h4>
+                <p>
+                    The <a>empty namespace</a> is a permanent and immutable member of the <a>namespace registry</a>
+                    which can be used for default data or when <a>namespaces</a> are not required, such as for trivial
+                    or single domain metadata storage applications.
+                </p>
+            </section>
+            <section>
+                <h3 id="type-conversion">Value Type Support</h3>
+                <p>
+                    Repositories may provide value types defined by
+                </p>
+            </section>
+        </section>
+
+        <section class="informative">
+            <h2>Internationalization</h2>
+
+        </section>
+        <section class="informative">
+            <h2>Relationship to RDF</h2>
+
+        </section>
+    </section>
+
+
+</body>
+
+</html>

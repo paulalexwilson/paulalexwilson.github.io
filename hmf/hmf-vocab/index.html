@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <title>Linked Hierarchical Metadata Vocabulary</title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
-    <script src="common/common.js" class="remove" defer></script>
+    <script src="../common/common.js" class="remove" defer></script>
     <script class="remove">
         // All config options at https://respec.org/docs/
         var respecConfig = {
@@ -20,172 +20,13 @@
             subtitle: "A lightweight vocabulary for metadata storage and exchange",
         };
     </script>
-    <style type="text/css">
-        html {
-            background-image: none !important;
-        }
-
-        .hlist {
-            border: 1px solid navy;
-            padding: 5px;
-            background-color: #F4FFFF;
-        }
-
-        .hlist li {
-            display: inline;
-            display: inline-table;
-            list-style-type: none;
-            padding-right: 20px;
-        }
-
-        .highlight {
-            font-weight: bold;
-            color: #0a3;
-        }
-
-        .comment {
-            color: #999;
-        }
-
-        .illustration {
-            text-align: center;
-        }
-
-        #vocabulary-jsonld {
-            white-space: pre-wrap;
-        }
-
-        .example>pre.context:before {
-            content: "Context";
-            float: right;
-            font: x-large Arial, sans-serif;
-            color: gray;
-            border: solid thin black;
-            padding: 0.2em;
-        }
-
-        .example>pre.frame:before {
-            content: "Frame";
-            float: right;
-            font: x-large Arial, sans-serif;
-            color: gray;
-            border: solid thin black;
-            padding: 0.2em;
-        }
-
-        .example>pre.result:before {
-            content: "Result";
-            float: right;
-            font: x-large Arial, sans-serif;
-            color: gray;
-            border: solid thin black;
-            padding: 0.2em;
-        }
-
-        .example>pre.turtle:before {
-            content: "Turtle";
-            float: right;
-            font: x-large Arial, sans-serif;
-            color: gray;
-            border: solid thin black;
-            padding: 0.2em;
-        }
-
-        .highlight.changed,
-        .show-changes {
-            background-color: lime;
-        }
-
-        .show-changes.selected:before {
-            content: "de-highlight";
-        }
-
-        .show-changes:before {
-            content: "highlight";
-        }
-
-        aside.example {
-            overflow-y: hidden;
-        }
-
-        /* example tab selection */
-        .ds-selector-tabs {
-            padding-bottom: 2em;
-        }
-
-        .ds-selector-tabs .selectors {
-            padding: 0;
-            border-bottom: 1px solid #ccc;
-            height: 28px;
-        }
-
-        .ds-selector-tabs .selectors button {
-            display: inline-block;
-            min-width: 54px;
-            text-align: center;
-            font-size: 11px;
-            font-weight: bold;
-            height: 27px;
-            padding: 0 8px;
-            line-height: 27px;
-            transition: all, 0.218s;
-            border-top-right-radius: 2px;
-            border-top-left-radius: 2px;
-            color: #666;
-            border: 1px solid transparent;
-        }
-
-        .ds-selector-tabs .selectors button:first-child {
-            margin-left: 2px;
-        }
-
-        .ds-selector-tabs .selectors button.selected {
-            color: #202020 !important;
-            border: 1px solid #ccc;
-            border-bottom: 1px solid #fff !important;
-        }
-
-        .ds-selector-tabs .selectors button:hover {
-            background-color: transparent;
-            color: #202020;
-            cursor: pointer;
-        }
-
-        .ds-selector-tabs pre:not(.preserve),
-        .ds-selector-tabs table:not(.preserve) {
-            display: none;
-        }
-
-        .ds-selector-tabs pre.selected,
-        .ds-selector-tabs table.selected {
-            display: block;
-        }
-
-        a.playground {
-            display: inline-block;
-            width: 150px;
-            border: 1px solid transparent;
-            border-top-right-radius: 2px;
-            border-top-left-radius: 2px;
-            background-color: rgb(192, 192, 192);
-            text-decoration: none;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        a[href].playground {
-            padding: 4px 0 3px 8px;
-            border-bottom: none;
-            text-decoration: none;
-            color: #666;
-        }
-    </style>
+    <style src="../common/style.css" type="text/css"></style>
 </head>
 
 <body>
     <p class="copyright">Copyright ...</p>
     <section id="abstract">
-        <p>LHMv is a vocabulary for the storage and exchange of linked metadata providing
+        <p>LHM-vocab is a vocabulary for the storage and exchange of linked metadata providing
             first class support for content hierarchies, navigation, schemas and versioning.
         </p>
     </section>
@@ -196,28 +37,28 @@
         <h2>Introduction</h2>
         <p>
             This vocabulary provides:
-
             <ul>
-                <li>A formal specification for the representation of LHM documents</li>
+                <li>A mechanism to express trees of content through parent-child relationships and IRIs</li>
+                <li>A set of standardised metadata properties common to most metadata applications</li>
                 <li></li>
             </ul>
         </p>
     </section>
     <section class="informative">
         <h2>Typographical conventions</h2>
-        <div data-include="common/typographical-conventions.html"></div>
+        <div data-include="../common/typographical-conventions.html"></div>
     </section>
     <section class="informative">
-        <h2>LHMv at a Glance</h2>
+        <h2>LHM-vocab at a Glance</h2>
         <section>
-            <h3>Example LHMv Document</h3>
+            <h3>Example LHM-vocab Document</h3>
             <p>
-                LHMv provides a vocabulary to describe metadata graphs consisting of nodes,
+                LHM-vocab provides a vocabulary to describe metadata graphs consisting of nodes,
                 properties and references. Nodes represent metadata resources, properties
                 hold the data on those resources and references connect together related
                 nodes. Let's take a look at a single, isolated node:
             </p>
-            <aside class="example ds-selector-tabs" title="Example LHMv Document">
+            <aside class="example ds-selector-tabs" title="Example LHM-vocab Document">
                 <div class="selectors">
                     <button class="selected" data-selects="compacted">JSON-LD (Compact)</button>
                     <a class="playground" target="_blank" href="">PG</a>
@@ -237,10 +78,8 @@
                   "lhm:title": "My Node Title",
                   "lhm:parent": "http://acme.com/content/ids/0",
                   "lhm:children": [
-                     {
                          "http://acme.com/content/ids/2",
                          "http://acme.com/content/ids/3"
-                     }
                   ],
                   "acme:genres": {
                       "@set": ["acme:crime", "acme:drama"]
@@ -258,7 +97,7 @@
             </p>
             <p>
                 The <code>acme:genres</code> property provides a JSON-LD <code>@set</code> of genres
-                for the node. You can see that metadata belonging to the LHMv vocabulary occupy a
+                for the node. You can see that metadata belonging to the LHM-vocab vocabulary occupy a
                 separate namespace to metadata belonging to the application domain (i.e. <code>acme</code>).
                 Namespaces allow different sets of metadata to coexist in a single metadata resource
                 without the risk of collisions.
@@ -266,11 +105,11 @@
         </section>
     </section>
     <section data-dfn-for="LHDv">
-        <h2>Vocabulary Specification</h2>
+        <h2>Node Specification</h2>
 
         <section>
             <h3 name="idAndType">Node Identity and Type (JSON-LD)</h3>
-            <p>LHMv uses IRIs (<a data-cite="RFC3987#section-2">Internationalized
+            <p>LHM-vocab uses IRIs (<a data-cite="RFC3987#section-2">Internationalized
                     Resource Identifiers</a> as described in [[RFC3987]]) for unambiguous
                 identification of metadata model entities (including nodes, properties, types, schemas and so on).
                 The <code>@id</code> property uniquely identifies the Node and the
@@ -366,7 +205,7 @@
         <section>
             <h3 name="standardisedMetadata">Standardised Metadata Properties</h3>
             <p>
-                Standardised metadata...
+                Standardised metadata
             </p>
             <aside class="example ds-selector-tabs" title="Standardised metadata properties">
                 <div class="selectors">
@@ -376,12 +215,12 @@
                 <pre class="compacted selected nohighlight" data-transform="updateExample">
                 <!--
                   ####...####
-                  "lhm:created": "2022-03-13T17:12:26Z",
-                  "lhm:createdBy": "2022-03-13T17:12:26Z",
-                  "lhm:lastModified": "2022-03-13T18:12:26Z",
-                  "lhm:lastModifiedBy": "2022-03-13T18:12:26Z",
-                  "lhm:title": "Node Title",
-                  "lhm:description": "Longer form"
+                  "lhm:****created****": "2022-03-13T17:12:26Z",
+                  "lhm:****createdBy****": "2022-03-13T17:12:26Z",
+                  "lhm:****lastModified****": "2022-03-13T18:12:26Z",
+                  "lhm:****lastModifiedBy****": "2022-03-13T18:12:26Z",
+                  "lhm:****title****": "Node Title",
+                  "lhm:****description****": "Longer form"
                   ""
                 -->
                 </pre>
@@ -391,7 +230,7 @@
         <section>
             <h3 name="Internationalization">Internationalized metadata</h3>
             <p>
-                Internationalized metadata...
+                Internationalized metadata...<code>@direction</code>, <code>@language</code>
             </p>
             <aside class="example ds-selector-tabs" title="Internationalized metadata properties">
                 <div class="selectors">
