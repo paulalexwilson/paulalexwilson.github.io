@@ -10,14 +10,16 @@
         // All config options at https://respec.org/docs/
         var respecConfig = {
             shortName: "HMF Model",
-            specStatus: "unofficial",
+            specStatus: "base",
+            noRecTrack: true,
             editors: [{
                 name: "Paul Wilson"
             }, {
-                name: "David Clark"
+                name: "Dave Clark"
             }],
             xref: "web-platform",
-            subtitle: "An abstract model for hierarchical metadata management and storage",
+            latestVersion: null,
+            subtitle: "A knowledge representation and reasoning framework for hierarchical metadata",
         };
     </script>
     <style src="../common/style.css" type="text/css"></style>
@@ -29,32 +31,147 @@
 </head>
 
 <body>
-    <p class="copyright">Copyright ...</p>
+    <p class="copyright">Copyright Paul Alexander Wilson & Dave John Clark - 2022</p>
     <section id="abstract">
         <p>
+            This document describes the Hierarchical Metadata Framework (HMF), an abstract knowledge
+            representation framework for hierarchical & linked metadata. HMF provides a comprehensive framework
+            addressing all aspects of metadata representation including domain modelling, versioning, identity &
+            location, navigation, namespacing, reification and so on.
+        </p>
+        <p>
+            HMF takes inspiration from a variety of specifications including [[[JSON-LD11]]], [[[RDF-CONCEPTS]]],
+            [[[XML]]] and <a
+                href="https://developer.adobe.com/experience-manager/reference-materials/spec/jcr/2.0/index.html">Content
+                Repository for Java Technology API Specification (JSR-283)</a>.
         </p>
     </section>
-    <section id="sotd">
+    <section id="sotd" class="override">
+        <h2>Status of this Document</h2>
         <p>This document is in Draft state.</p>
 
     </section>
     <section class="normative">
-        <h2>Terminology</h2>
-        <div data-include="../common/terms.html" data-oninclude="restrictReferences"></div>
+        <h2>Terminology & Conventions</h2>
+        <section>
+            <h3>Terminology</h3>
+            <div data-include="../common/terms.html" data-oninclude="restrictReferences"></div>
+        </section>
+
+        <section class="normative">
+            <h3>Diagram Conventions</h3>
+            <p>
+                This specification uses diagrams consisting of the following elements
+                to clarify concepts within the model:
+            </p>
+            <table class="simple" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="node-convention.png" alt="Node" width="110" /></td>
+                        <td>Illustrates a regular <a>node</a>.</td>
+                    </tr>
+                    <tr>
+                        <td><img src="typed-node-convention.png" alt="Node" width="110" /></td>
+                        <td>Illustrates a <a>node</a> including its <a>primary type</a> in compact form</td>
+                    </tr>
+                    <tr>
+                        <td><img src="version-convention.png" alt="Node" width="110" /></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><img src="node-type-convention.png" alt="Node" width="110" /></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
     </section>
+
+
 
     <section class="information">
         <h1 id="introduction">Introduction</h1>
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> is a
+            framework for hierarchical metadata. It provides a foundation for organising, querying, inferencing,
+            change-tracking and administering the metadata trees and graphs that lie at the heart of modern
+            web and media organisations. <abbr title="Hierarchical Metadata Framework">HMF</abbr> was conceived as
+            a foundation for <em>media-content</em> curation and syndication, but was designed to be agnostic
+            to any domain where metadata is <em>primarily hierarchical</em>.
+        </p>
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> allows for information to be captured and
+            formalized
+            within the model through <a>schemas</a>. <a>Schemas</a> categorise, characterise and constrain metadata and
+            so serve as building blocks for robust applications. <a>Schemas</a> can be applied to metadata at <em>any
+                point during its lifecycle</em> allowing for raw and unstructured data to be edited and reasoned into
+            formalised, semantically rich trees.
+        </p>
+
+        <hr />
 
         <p>
-            <abbr title="Hierarchical Metadata Framework">HMF</abbr> provides a rich foundation for the storage
-            and management of hierarchical metadata. The overall design goal is to offer a general and comprehensive
-            framework for metadata management including data representation & storage, editing & merging,
-            access control, versioning, validation, consistency, and so on. <abbr
-                title="Hierarchical Metadata Framework">HMF</abbr> was conceived as a foundational model for
-            <em>content</em> modelling, curation and delivery, but was designed to have broader application to
-            any domain where metadata is primarily hierarchical.
+            By focusing on domains where metadata is organised primarily into hierarchies (or <a>trees</a>),
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> supports a rich set of semantics that
+            would be otherwise unavailable:
+            <dl>
+                <dt>Move, Copy & Delete</dt>
+                <dd>Move, copy & delete operations applied on a <a>node</a> apply to the their entire <a>subtree</a>.
+                    This is
+                    conceptually identical to copying files and folders on a filesystem and allows metadata to be
+                    organised and managed whilst preserving structure.</dd>
+                <dt>Child Node Constraints</dt>
+                <dd>HMF allows <a>child node constraints</a> to dicate which child-types are permitted on a <a>node</a>.
+                    Using child node constraints, we can build metadata trees with <em>strong guarantees</em> about the
+                    validity of both data and structure.
+                </dd>
+                <dt>Cascading Access Control</dt>
+                <dd>Permissions and access control directives can be applied to <a>nodes</a> and to all
+                    descendents
+                    in a <em>cascading</em> fashion. Much like a filesystem, user or group principals therefore can own
+                    and administer entire <a>subtrees</a> without the overhead of permission-management of every node.
+                </dd>
+                <dt>Tree Versioning</dt>
+                <dd>When a specific version of a <a>node</a> is tracked, it is often desirable to also track its
+                    subtree.
+                    HMF allows subtrees of a <a>versionable</a> <a>node</a> to be automatically tracked when the owning
+                    <a>versionable</a> <a>node</a> is checked-in.
+                </dd>
+                <dt>Location & Navigation</dt>
+                <dd><a>Trees</a> give <a>nodes</a> and <a>properties</a> a <em>location</em> as defined by its
+                    <a>path</a> relative to the metadata <a>root</a>. This means information not only has
+                    <a>identity</a>
+                    but also <a>location</a> allowing for metadata to be discovered or accessed relative to other
+                    metadata
+                    via the process of <a>navigation</a>. <a>Navigation</a> allows knowledge to be <em>explored</em>
+                    without prior information about what is available or even the structure of the metadata tree.</dd>
+
+            </dl>
         </p>
+
+        <hr />
+
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr> represents metadata as a <em>linked data
+                graph</em> (see [[[Linked-Data]]]). All <a>entities</a> including <a>nodes</a> and <a>properties</a>
+            represented by an HMF model are unambigiously
+            identified using an <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc3987#section-2"><abbr
+                    title="Internationalized Resource Identifier">IRI</abbr></a>. Using a universally unique
+            resource identifier for all atoms of data allows systems to precisely resolve ownership and
+            meaning of knowledge held within HMF. Using IRIs as the foundation identifier along with <a>namespacing</a>
+            also allows HMF to represent knowledge describing a common subject but belonging to unrelated systems or
+            sources without collision or ambiguity. It also allows modules and components to be registered against
+            subsets of metadata (as identified by a <a>namespace IRI</a>) stored within HMF whilst ignoring
+            irrelevant subsets.
+        </p>
+
+        <hr />
 
         <p>
             This document provides the <em>abstract</em> model for <abbr
@@ -64,36 +181,11 @@
             for metadata interchange and delivery.
         </p>
 
-        <p>
-            <abbr title="Hierarchical Metadata Framework">HMF</abbr> is best suited to metadata with the following
-            characteristics:
-        </p>
-
-        <ul>
-            <li>Consists of <a>entities</a> that are often arranged into <i>parent-child</i>
-                <a>relationships</a>
-                or where one <a>entity</a> is said to <i>contain</i> another, such as you might find
-                in content management applications, folder/file structures, configuration hierarchies and
-                so on.
-            </li>
-            <li>Is subject to a <a>schema</a> constraining both the <em>data</em> and <em>structure</em>,
-                or has an evolving <a>schema</a>, or has a <a>schema</a> that is closely related to the
-                application domain.
-            </li>
-            <li>Consists of data created by or arriving from multiple sources, which must be managed, edited
-                or curated together
-            </li>
-            <li>Changes must be tracked such that historical versions of metadata state can be accessed or
-                referenced.
-            </li>
-        </ul>
-
         <section class="informative">
-            <h2 id="key-concepts">Key Concepts</h2>
+            <h2 id="key-concepts">Key Concepts and Rationale</h2>
             This section highlights some of the key ideas found in <abbr title="Hierarchical Metadata">HMF</abbr>.
             <section>
-                <h3 id="nodes-trees">Hierarchical-Graph Hybrid Model</h3>
-
+                <h3 id="nodes-trees">Hybrid Hierarchical-Graph Model</h3>
                 <p>
                     <abbr title="Hierarchical Metadata">HMF</abbr> provides a modelling framework
                     for metadata that fits naturally into a <a>tree</a> of <a>nodes</a>. The <a>tree</a>
@@ -124,7 +216,7 @@
 
             </section>
 
-            <section class="informative">
+            <section>
                 <h3 id="namespaces">Namespaces</h3>
 
                 <p>
@@ -147,7 +239,7 @@
                     In <abbr title="Hierarchical Metadata">HMF</abbr> all <a>nodes</a> and <a>properties</a>
                     belong to a <a>namespace</a> which is identified using an <abbr
                         title="Internationalized Resource Identifier">IRI</abbr>. Namespaces
-                    ensure that information stored in <abbr title="Hierarchical Metadata">HMF</abbr> is
+                    ensure that information stored in <abbr title="Hierarchical Metadata Framework">HMF</abbr> is
                     <em>recognisable</em> and <em>distinguishable</em>. <a>Namespaces</a> enable the following:
                 </p>
 
@@ -162,20 +254,12 @@
             </section>
 
             <section>
-                <h2 id="schemas">Schemas</h2>
+                <h2 id="schemas">Knowledge Representation and Reasoning</h2>
                 <p>
-                    <abbr title="Hierarchical Metadata">HMF</abbr> uses <a>schemas</a> to enforce data
-                    validation, consistency and integrity. <a>Schemas</a> determine which <a>properties</a>
-                    are allowed on <a>nodes</a>, what datatypes those <a>properties</a> may have and
-                    which child <a>nodes</a> are permitted on a given <a>node</a>. <a>Schemas</a> therefore
-                    enforce both <i>data and structure</i>.
-                </p>
-
-                <p>
-                    <a>Schemas</a> are defined and stored within the model as regular <a>nodes</a>.
-                    This means that<i><a>schemas</a> are data</i> and can be exported, published and passed around
-                    alongside the data they constrain. This is a very powerful concept known as <a>metadata-defined
-                        schemas</a>.
+                    <a>Schemas</a> in <abbr title="Hierarchical Metadata Framework">HMF</abbr> provide the means
+                    to <em>represent knowledge</em> within the metadata model and make complex systems easier to design
+                    and build. <a>Schemas</a> allow for the construction of <a>formalisms</a> which capture information
+                    about the <a>domain</a>
                 </p>
 
             </section>
@@ -187,6 +271,21 @@
                     the state of their versionable subtree can be accessed and restored. This also enables <a>nodes</a>
                     to reference fixed-versions of a given <a>node</a> which can be especially useful in systems
                     where data is frequently modified.
+                </p>
+
+            </section>
+            <section>
+                <h2 id="annotations">Annotations</h2>
+
+                <p>
+                    Often it is desirable to store data additional information within a <a>node</a> about a
+                    property or relationship (such as a child relationship) without it forming part of
+                    the <a>node</a>
+                </p>
+                <p>
+                    <a>Annotations</a> provide additional <a>node</a> or <a>property</a> level metadata to the
+                    model. They satisfy the common cases of needing to capture statement-level metadata such as
+                    certainty scores, weights, temporal restrictions, permissions and provenance information.
                 </p>
 
             </section>
@@ -468,95 +567,129 @@
                     </p>
                 </div>
             </p>
+            <section>
+                <h3>Local Name</h3>
+                <p>
+
+                </p>
+            </section>
+            <section>
+                <h3>Naming Restrictions</h3>
+
+                <p>
+                    The characters declared invalid within a local name (“/”, “:”, “[“, “]”, “|”, “*”) represent only
+                    those
+                    characters which are used as metacharacters in JCR names, paths and name-matching patterns (see
+                    §5.2.2
+                    Iterating Over Child Items). These restrictions are not necessarily sufficient to enforce best
+                    practices
+                    in
+                    the creation of JCR names. In particular, the minimal grammar defined here permits JCR names with
+                    leading
+                    and trailing whitespace as well as characters which may appear superficially identical while
+                    representing
+                    different code points, creating a potential security issue.
+                </p>
+            </section>
+
+            <section>
+                <h3 id="empty-namespace">The Empty Namespace</h3>
+                <p>
+                    For trivial or single-source metadata applications, enforcing a <a>namespace</a> could be overly
+                    burdensome. <abbr title="Hierarchical Metadata Framework">HMF</abbr> provides a permanent <a>default
+                        namespace</a> with prefix <code>""</code> (i.e. the empty string), also referred to as the
+                    <a>empty namespace</a>. This allows <a>names</a> to omit the <a>prefix</a> and be located using
+                    their
+                    <a>local name</a> only.
+                </p>
+            </section>
         </section>
+
+
         <section>
-            <h3>Local Name</h3>
-            <p>
+            <h2>Relationships</h2>
+            <section>
+                <h3 id="parent-child-relationships">Parent-Child Relationships</h3>
+                <p>
+                    <abbr title="Hierarchical Metadata Framework">HMF</abbr> has <i>first-class</i> support for
+                    <i>parent-child</i>
+                    relationships between <a>nodes</a>. Parent-child relationships have additional semantics beyond what
+                    are
+                    provided for regular [[[#references]]]. For example, a child is considered to belong to its parent,
+                    meaning
+                    that re-locating the parent also relocates the child. Versioning a parent in many cases will also
+                    version
+                    the child. A parent's <a>type</a> may also enforce that it has a child with a given <a>name</a> and
+                    <a>type</a>.
+                </p>
+                <p>
+                    Parent-child relationships can be said to define the <a>tree</a> structure metadata.
+                </p>
+                <p>
+                    <a>Trees</a> allow <a>paths</a> to be used to locate a <a>node</a>. <a>Paths</a> can only
+                    be used to traverse <em>parent-child</em> relationships and do not apply to <a>references</a>.
+                    <a>Nodes</a> can be referenced either using their identity or using their location as defined
+                    by their <a>path</a> from the <a>root</a> to the <a>node</a>.
+                </p>
+                <p>
+                    [[[#primary-child]]] allows clients to navigate through parent-child relationships without
+                    knowing the names of the intermediate
+                </p>
+                <p>
+                    First class support in type system (schemas can declare child types)
+                </p>
+                <p>
+                    <abbr title="Hierarchical Metadata Framework">HMF</abbr> does not support <a>same name siblings</a>.
+                    That is, all children must have a unique name.
+                </p>
+            </section>
+            <section>
+                <h3 id="references">Reference Properties</h3>
+                <p>
+                    A <a>node</a>
+                </p>
+                <section>
+                    <h4 id="strong-weak-references">Strong and Weak References</h4>
+                    <p>
 
-            </p>
+                    </p>
+                </section>
+                <section>
+                    <h4 id="versioned-references">Versioned References</h4>
+                    <p>
+
+                    </p>
+                </section>
+                <p>
+                    * weak and strong references
+                    * Reference
+                    * Versioned Reference
+                </p>
+            </section>
+            <section>
+                <h3 id="primary-child">Primary Child</h3>
+                <p>
+                    A [[[#node-type]]] can declare <em>one</em> of its children as primary, meaning that for all
+                    <a>nodes</a> of
+                    that type, that child is accessible in a way that does not require the name of the item. Primary
+                    children
+                    allow clients to traverse a <a>tree</a> without upfront knowledge of the <a>node</a> structure.
+                </p>
+                <p>
+                    A client could for example know to traverse a <a>tree</a>&quot;s primary children until a
+                    <a>node</a> of
+                    a given <a>type</a> or <a>name</a> is encountered. This would allow editors to modify a
+                    <a>tree</a>&quot;s
+                    structure, perhaps be adding or removing intermediate nodes, without breaking the client.
+                </p>
+            </section>
         </section>
-        <section>
-            <h3>Naming Restrictions</h3>
-
-            <p>
-                The characters declared invalid within a local name (“/”, “:”, “[“, “]”, “|”, “*”) represent only those
-                characters which are used as metacharacters in JCR names, paths and name-matching patterns (see §5.2.2
-                Iterating Over Child Items). These restrictions are not necessarily sufficient to enforce best practices
-                in
-                the creation of JCR names. In particular, the minimal grammar defined here permits JCR names with
-                leading
-                and trailing whitespace as well as characters which may appear superficially identical while
-                representing
-                different code points, creating a potential security issue.
-            </p>
-        </section>
-
-        <h3 id="empty-namespace">The Empty Namespace</h3>
-        <p>
-            For trivial or single-source metadata applications, enforcing a <a>namespace</a> could be overly
-            burdensome. <abbr title="Hierarchical Metadata Framework">HMF</abbr> provides a permanent <a>default
-                namespace</a> with prefix <code>""</code> (i.e. the empty string), also referred to as the
-            <a>empty namespace</a>. This allows <a>names</a> to omit the <a>prefix</a> and be located using their
-            <a>local name</a> only.
-        </p>
-
-
-        <h2>Relationships</h2>
-        <h3 id="parent-child-relationships">Parent-Child Relationships</h3>
-        <p>
-            <abbr title="Hierarchical Metadata Framework">HMF</abbr> has <i>first-class</i> support for
-            <i>parent-child</i>
-            relationships between <a>nodes</a>. Parent-child relationships have additional semantics beyond what are
-            provided for regular [[[#references]]]. For example, a child is considered to belong to its parent, meaning
-            that re-locating the parent also relocates the child. Versioning a parent in many cases will also version
-            the child. A parent's <a>type</a> may also enforce that it has a child with a given <a>name</a> and
-            <a>type</a>.
-        </p>
-        <p>
-            Parent-child relationships can be said to define the <a>tree</a> structure metadata.
-        </p>
-        <p>
-            <a>Trees</a> allow <a>paths</a> to be used to locate a <a>node</a>. <a>Paths</a> can only
-            be used to traverse <em>parent-child</em> relationships and do not apply to <a>references</a>.
-            <a>Nodes</a> can be referenced either using their identity or using their location as defined
-            by their <a>path</a> from the <a>root</a> to the <a>node</a>.
-        </p>
-        <p>
-            [[[#primary-child]]] allows clients to navigate through parent-child relationships without
-            knowing the names of the intermediate
-        </p>
-        <p>
-            First class support in type system (schemas can declare child types)
-        </p>
-        <p>
-            <abbr title="Hierarchical Metadata Framework">HMF</abbr> does not support <a>same name siblings</a>.
-            That is, all children must have a unique name.
-        </p>
-        <h3 id="references">References</h3>
-        <p>
-            * weak and strong references
-            * Reference
-            * Versioned Reference
-        </p>
-        <h3 id="primary-child">Primary Child</h3>
-        <p>
-            A [[[#node-type]]] can declare <em>one</em> of its children as primary, meaning that for all <a>nodes</a> of
-            that type, that child is accessible in a way that does not require the name of the item. Primary children
-            allow clients to traverse a <a>tree</a> without upfront knowledge of the <a>node</a> structure.
-        </p>
-        <p>
-            A client could for example know to traverse a <a>tree</a>&quot;s primary children until a <a>node</a> of
-            a given <a>type</a> or <a>name</a> is encountered. This would allow editors to modify a <a>tree</a>&quot;s
-            structure, perhaps be adding or removing intermediate nodes, without breaking the client.
-        </p>
-
-        <h2>Item Annotations</h2>
+        <h2>Annotations</h2>
         <p>
             For a given node, all <a>items</a> (i.e. child <a>nodes</a> and <a>properties</a>) can themselves
             have <a>properties</a>. This allows the <abbr title="Hierarchical Metadata Framework">HMF</abbr>
-            model to store so-called <em>statement-level metadata</em> capturing information about
-            metadata that is incidental or orthogonal to its <em>primary domain</em>. Popular use cases for
-            applying and statement-level metadata include certainty scores, weights, temporal
+            model to store so-called <em>statement-level metadata</em>, capturing secondary information
+            about the metadata. Popular use cases for annotations include certainty scores, weights, temporal
             restrictions, permissions and provenance information.
         </p>
         <p>
@@ -590,7 +723,6 @@
             * Modified By
             * Modified
         </p>
-
 
         <h2 id="paths">Paths</h2>
         <section>
@@ -630,7 +762,7 @@
         <section>
             <h3 id="node-type">Node Definition</h3>
             <p>
-                sfsadf
+                A <a>node</a>
             </p>
             <section>
                 <h4 id="">Child Constraints</h4>
@@ -707,9 +839,12 @@
     <section>
         <h2>Versioning</h2>
         <h3>Versionable Nodes</h3>
-        <h3>Checked-in &amp; Checked-out</h3>
+        <h3>Checked-in &amp; Checked-out State</h3>
+        <h3>Version Labels</h3>
         <h3>Versionable Subtree</h3>
         <h3>On-Parent Version</h3>
+        <h3>Referencing a Version</h3>
+        <h3>Version Tags</h3>
         <h3>Version History</h3>
     </section>
     <section>
@@ -799,7 +934,10 @@
                 </p>
             </section>
         </section>
+        <section class="informative">
+            <h2>Indexing</h2>
 
+        </section>
         <section class="informative">
             <h2>Internationalization</h2>
 
