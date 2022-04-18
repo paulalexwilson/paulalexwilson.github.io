@@ -25,104 +25,321 @@
         Denotes the common usage of an <a>Internationalized Resource Identifier</a>.
     </dd>
     <!-- Data Model Terms -->
-    <dt><dfn data-lt="annotations" class="preserve">annotation</dfn></dt>
+    <dt><dfn data-lt="annotations|annotating" class="preserve">annotation</dfn></dt>
     <dd>
-        An <a>annotation</a> is a ...</dd>
+        An <a>annotation</a> holds supplimentary metadata about <a>properties</a> and
+        <a>child nodes</a> that is not typically part of the core <a>domain model</a>.
+        See [[[#annotations]]].</dd>
+    <dt><dfn data-lt="base versions|base" class="preserve">base version</dfn></dt>
+    <dd>
+        The <em>base version</em> is the <a>version</a> from which a given <a>node</a>
+        was checked-out. Changes between the <a>working tree</a> <a>node</a> and
+        its <a>base version</a> constitute the set of <a>versionable changes</a>.</dd>
+    <dt><dfn data-lt="child nodes" class="preserve">child node</dfn></dt>
+    <dd>
+        A <em>child node</em> <code>C</code> of a given <a>node</a> <code>P</code> is one where there exists a
+        <a>parent-child relationship</a> between <code>P</code> and <code>C</code> where <code>P</code>
+        is the parent and <code>C</code> is the child.
+    </dd>
+    <dt><dfn data-lt="child node type definitions|child node definition|child node definitions" class="preserve">child
+            nodes type definitions</dfn></dt>
+    <dd>
+        A <em>child node type definition</em> is used to permit and constrain a <a>child</a>
+        on a <a>node</a> within a <a>node type definition</a>. See [[[#child-node-definition]]].
+    </dd>
+    <dt><dfn data-lt="default namespaces" class="preserve">default namespace</dfn></dt>
+    <dd>
+        The <em>default namespace</em> is the convenient immutable empty namespace that requires no
+        <a>term</a> to be specified in the <a>local name</a>. See [[[#empty-namespace]]].</dd>
+    <dt><dfn data-lt="domains|domain model|domain models" class="preserve">domain model</dfn></dt>
+    <dd>
+        The <em>domain</em> is the real-world subject that is being <a>formalized</a> with HMF.</dd>
+    <dt><dfn data-lt="effective types|effective node type|effective node types" class="preserve">effective type</dfn>
+    </dt>
+    <dd>
+        The <em>effective type</em> of a <a>node</a> is the set of all <a>item definitions</a>
+        inherited from its <a>supertypes</a> and <a>mixin types</a>.</dd>
+    <dt><dfn data-lt="empty namespaces" class="preserve">empty namespace</dfn></dt>
+    <dd>
+        See <a>default namespace</a>.</dd>
     <dt><dfn data-lt="entities" class="preserve">entity</dfn></dt>
     <dd>
-        An <a>entity</a> is a ...</dd>
+        An <a>entity</a> is anything held within the repository that has an <a>identity</a>.
+        This can be regular <a>nodes</a> within the <a>working tree</a> but may also
+        refer to objects such as the <a>namespace registry</a> and <a>repository node</a>.</dd>
+    <dt><dfn data-lt="formalisms|formalise|formalised|formalizms|formalizm|formalize|formalized"
+            class="preserve">formalism</dfn></dt>
+    <dd>
+        A <em>formalism</em> is the process of encoding the rules and characterstics of a
+        <a>domain</a> using the HMF <a>type system</a>.</dd>
+    <dt><dfn data-lt="frozen nodes" class="preserve">frozen node</dfn></dt>
+    <dd>
+        A <em>frozen node</em> is a <a>node</a> within <a>version storage</a> that tracks
+        the <a>versioned state</a> of a <a>versionable node</a>. See [[[#frozen-node]]].</dd>
     <dt><dfn data-lt="identities" class="preserve">identity</dfn></dt>
     <dd>
-        An <a>identity</a> is a ...</dd>
+        An <a>identity</a> is a means to unambigously distinguish an object from another
+        through the use of an identifier. HMF uses an <a>Internationalized Resource Identifier</a>
+        to represent identity within the model.</dd>
     <dt><dfn class="preserve">local name</dfn></dt>
     <dd>
-        A <a>local name</a> is a ...</dd>
-    <dt><dfn data-lt="indices" class="preserve">index</dfn></dt>
+        A <a>local name</a> distinguishes a <a>name</a> within its namespace and ideally provides
+        a reasonable and understandable label to the <a>item</a>.</dd>
+    <dt><dfn data-lt="locations|located|locate" class="preserve">location</dfn></dt>
     <dd>
-        An <a>index</a> is a ...</dd>
+        <a>Location</a> refers to the <em>position</em> of <a>node</a> within the <a>tree</a>.
+        A <a>location</a> is a way to resolve a <a>node</a> independently of its <a>identity</a>
+        by <a>traversing</a> from the <a>root node</a>.
+    </dd>
     <dt><dfn data-lt="items" class="preserve">items</dfn></dt>
     <dd>
-        An <a>item</a> is a ...</dd>
-    <dt><dfn class="preserve">metadata-defined schemas</dfn></dt>
+        An <a>item</a> is the part of a <a>tree</a> that can be <a>located</a> using a
+        <a>path</a>. Informally it is either a <a>node</a> or a <a>property</a>.</dd>
+    <dt><dfn data-lt="item definitions" class="preserve">item definition</dfn></dt>
     <dd>
-        Metadata defined schema is</dd>
-    <dt><dfn data-lt="names" class="preserve">name</dfn></dt>
+        An <em>item definition</em> is either a <a>property definition</a> or <a>
+            child node definition</a>.
+    </dd>
+    <dt><dfn class="preserve">metadata-defined types</dfn></dt>
     <dd>
-        A <a>name</a> is a ...</dd>
-    <dt><dfn data-lt="namespaces" class="preserve">namespace</dfn></dt>
+        Metadata-defined types refers to the concept of holding type information
+        as first class metadata <a>items</a> within the <a>tree</a>. It allows the
+        model formalizations to be stored and managed itself as metadata.</dd>
+    <dt><dfn data-lt="mixins|mixin type|mixin types" class="preserve">mixin</dfn></dt>
     <dd>
-        The term <a>namespace</a> is not concretely defined in <abbr title="Hierarchical Metadata Framework">HMF</abbr>.
+        A <em>mixin type</em> is a <a>type</a> that can be composed onto a <a>node</a>
+        (or onto a <a>primary type</a>) to provide additional metadata or functionality.
+        See [[[#mixin-types]]].</dd>
+    <dt><dfn data-lt="names|named" class="preserve">name</dfn></dt>
+    <dd>
+        A <a>name</a> uniquely identifies an <a>item</a> within a <a>tree</a> and
+        consists of a <a>namespace</a> and a <a>local name</a>. </dd>
+    <dt><dfn data-lt="namespaces|namespaced" class="preserve">namespace</dfn></dt>
+    <dd>
+        A <a>namespace</a> is an <a>entity</a> to which <a>local names</a> belong
+        allowing them to be uniquely and unambigously identified. They allow
+        data arriving from independent sources to coexist witin the same <a>tree</a>
+        without risk naming collisions. They also allow meaning and semantics to be
+        attached to <a>items</a> within the tree by virtue of their membership within
+        the namespace.
     </dd>
     <dt><dfn data-lt="namespace IRIs" class="preserve">namespace IRI</dfn></dt>
     <dd>
-        A <a>namespace IRI</a> refers to a </dd>
+        A <a>namespace IRI</a> is an <a>IRI</a> that identifies a <a>namespace</a>.
+        A namespace IRI may be aliased using a <a>term</a> to provide a short hand <a>name</a>.
+        See [[[#names]]].</dd>
+    <dt><dfn data-lt="namespace registry" class="preserve">namespace registry</dfn></dt>
+    <dd>
+        The <em>namespace registry</em> provides the mapping between <a>terms</a> and
+        <a>namespace IRIs</a>. See [[[#namespace-registry]]]
+    </dd>
+    <dt><dfn data-lt="navigate" class="preserve">navigation</dfn></dt>
+    <dd>
+        <em>Navigation</em> is the process to following <a>relationships</a> between
+        <a>nodes</a>. <a>Traversal</a> is a form of <a>navigation</a> following
+        <a>parent-child relationships</a>.
+    </dd>
     <dt><dfn data-lt="nodes" class="preserve">node</dfn></dt>
     <dd>
-        A <a>node</a> is a ...</dd>
-    <dt><dfn data-lt="node identities" class="preserve">node identities</dfn></dt>
+        <a>Nodes</a> provide the structure to a metadata <a>tree</a> modelled within HMF.
+        They are <a>named</a> and <a>typed</a> <a>entities</a> acting as containers
+        of <a>properties</a>. See [[[#nodes]]].
+    <dt><dfn data-lt="node identities" class="preserve">node identity</dfn></dt>
     <dd>
-        A <a>node identities</a> is a ...</dd>
-    <dt><dfn data-lt="paths" class="preserve">path</dfn></dt>
+        A <a>node identity</a> provides a what to unique identify a <a>node</a> within
+        a HMF <a>tree</a> using its <a>IRI</a>. See [[[#node-identity]]].</dd>
+    <dt><dfn data-lt="node type definitions" class="preserve">node type definitions</dfn></dt>
     <dd>
-        A <a>path</a> is a ...</dd>
+        Defines a <a>node</a> <a>type</a> within the model in terms of <a>property type definitions</a>
+        and <a>node type definitions</a>. See [[[#node-type-definition]]].</dd>
+    <dt><dfn data-lt="on-parent version" class="preserve">on-parent-version</dfn></dt>
+    <dd>
+        The <em>on-parent-version</em> is a value applied to a <a>node type</a>
+        that defines how a <a>node</a> is treated when its <a>parent</a> <a>versionable</a>
+        is checked-in. See [[[#on-parent-version]]].</dd>
+    <dt><dfn data-lt="parent|child|parent-child|parent-child relationships" class="preserve">parent-child
+            relationship</dfn></dt>
+    <dd>
+        A <em>parent-child relationship</em> is a type of <a>relationship</a> that forms
+        the metadata <a>tree</a> that indicate a <em>containment</em> or <em>ownership</em>
+        relationship between <a>nodes</a>. See [[[#parent-child-relationships]]].
+
+    </dd>
+    <dt><dfn data-lt="paths|absolute path|absolute paths|absolute|relative|relative path|relative paths"
+            class="preserve">path</dfn></dt>
+    <dd>
+        A <a>path</a> is a sequence of <a>segments</a> allowing an <a>item</a> to be
+        resolved within a <a>tree</a> via <a>navigation</a> from one <a>node</a> to another.
+        In the case of an <a>absolute path</a> the <a>node</a> is resolved from the
+        <a>root node</a>. In the case of a <a>relative path</a> the <a>node</a> is resolved
+        from an arbitrary node. See [[[#paths]]] and [[[#path-segments]]].
+    </dd>
     <dt><dfn data-lt="prefixes" class="preserve">prefix</dfn></dt>
     <dd>
-        A <a>prefix</a> is the first component of a <a>compact IRI</a>
-        which comes from a <a>term</a> that maps to a string that,
-        when prepended to the suffix of the <a>compact IRI</a>,
-        results in an <a>IRI</a>.</dd>
+        <a>Prefix</a> is a synonym of <a>term</a>.
+    </dd>
+    <dt><dfn data-lt="primary items" class="preserve">primary item</dfn></dt>
+    <dd>
+        The <em>primary item</em> of a <a>node</a> is an <a>item</a> which can
+        be retrieved without knowing its <a>name</a>. See [[[#primary-item]]].
+    </dd>
+    <dt><dfn data-lt="primary types|primary node type|primary node types" class="preserve">primary type</dfn></dt>
+    <dd>
+        The <em>primary type</em> of a <a>node</a> defines its <a>type</a>
+        and therefore core <a>item definitions</a>. See [[[#primary-type]]].
+    </dd>
     <dt><dfn data-lt="properties" class="preserve">property</dfn></dt>
     <dd>
-        A <a>property</a> is a ...</dd>
+        <a>Properties</a> hold <a>values</a> on <a>nodes</a> and provide
+        the information about the <a>domain</a> modelled by a given HMF <a>tree</a>.</dd>
+    <dt><dfn data-lt="property definitions|property definition|property type definitions" class="preserve">property type
+            definitions</dfn></dt>
+    <dd>
+        A <em>property type definition</em> is used to permit and constrain a <a>property</a>
+        on a <a>node</a> within a <a>node type definition</a>. See [[[#property-definition]]].</dd>
     <dt><dfn data-lt="property types" class="preserve">property type</dfn></dt>
     <dd>
-        A <a>property type</a> is a ...</dd>
-    <dt><dfn data-lt="qualified names" class="preserve">qualified name</dfn></dt>
+        See <a>value type</a>.</dd>
+    <dt><dfn data-lt="references|strong reference|weak reference|reference property|reference properties|reference relationship|reference relationships|reference type"
+            class="preserve">reference</dfn></dt>
     <dd>
-        A <a>qualified name</a> is a ...</dd>
-    <dt><dfn data-lt="references" class="preserve">reference</dfn></dt>
+        A <a>reference</a> is a type of unidirectional <a>relationship</a>
+        between <a>nodes</a>. They can either by <em>strong</em> or <em>weak</em>
+        as explained in [[[#references]]].</dd>
+    <dt><dfn data-lt="referenceable|referenceable node" class="preserve">referenceable</dfn></dt>
     <dd>
-        A <a>reference</a> is a ... </dd>
-    <dt><dfn data-lt="referenceable" class="preserve">referenceable</dfn></dt>
-    <dd>
-        The term <a>referenceable</a> refers to </dd>
+        A <a>node</a> is <a>referenceable</a> if it can be the target of a
+        <a>reference</a>. Only <a>nodes</a> that are <a>referenceable</a>
+        may be the subject of a <a>reference</a>. See [[[#referenceable-type]]].</dd>
     <dt><dfn data-lt="relationships" class="preserve">relationship</dfn></dt>
     <dd>
-        A <a>relationship</a> is a... </dd>
+        A <a>relationship</a> connects two <a>nodes</a>. They can be bidirectional
+        as in the case of <a>parent-child relationships</a> or unidirectional as in the
+        case of <a>reference relationships</a>.</dd>
     <dt><dfn data-lt="repositories" class="preserve">repository</dfn></dt>
     <dd>
-        A <a>repository</a> acts as a container of <a>nodes</a>.</dd>
+        A <a>repository</a> provides storage and <a>operation</a> semantics to metadata <a>trees</a> within
+        HMF. See [[[#repository]]].</dd>
+    <dt><dfn data-lt="repository nodes" class="preserve">repository node</dfn></dt>
+    <dd>
+        The <em>repository node</em> provides metadata about the <a>repository</a>.
+        See [[[#repository-node]]].</dd>
+    <dt><dfn data-lt="residual|residual item definitions|residual definition|residual child node type definition|residual property type definition"
+            class="preserve">residual item definition</dfn></dt>
+    <dd>
+        A <em>residual item definition</em> is an <a>item definition</a> that covers all remaining <a>items</a>
+        defined on a <a>node type</a>. See [[[#residual-property-definition]]] and
+        [[[#residual-child-node-definition]]].</dd>
     <dt><dfn data-lt="resources" class="preserve">resource</dfn></dt>
     <dd>
-        A <a>resource</a> is the general term for any entity addressable within the metadata model.</dd>
-    <dt><dfn data-lt="roots" class="preserve">root</dfn></dt>
+        A <a>resource</a> is an instance of a given <a>entity</a>, typically transformed
+        into a <a>representation</a> for transfer via an API.</dd>
+    <dt><dfn data-lt="roots|root node|root nodes" class="preserve">root</dfn></dt>
     <dd>
-        A <a>root</a> is ...</dd>
+        The <a>root</a> is the base or the metadata <a>tree</a> and acts as the ultimate
+        ancestor of all <a>nodes</a>. <a>Absolute paths</a> are anchored from the
+        <a>root</a>.</dd>
+    <dt><dfn data-lt="same name siblings" class="preserve">same name siblings</dfn></dt>
+    <dd>
+        A <em>same name sibling</em> is a pair of <a>child nodes</a> with the same <a>name</a>.
+        HMF does not support <a>same name siblings</a>.
+    </dd>
+    <dt><dfn data-lt="segments" class="preserve">segment</dfn></dt>
+    <dd>
+        A <a>segment</a> is a component of a <a>path</a> used to <a>locate</a>
+        <a>nodes</a>. See [[[#path-segments]]].
+    </dd>
     <dt><dfn data-lt="schemas" class="preserve">schema</dfn></dt>
     <dd>
-        A <a>schema</a> is a ...</dd>
+        A <a>schema</a> is a ...
+        <p class="ednote" title="should we remove schema from the spec?">
+            Should we remove schema from the specification?
+        </p>
+    </dd>
+    <dt><dfn data-lt="supertypes" class="preserve">supertype</dfn></dt>
+    <dd>
+        A <em>supertype</em> is a <a>node type</a> from which a <a>node type definition</a>
+        inherits its <a>item definitions</a>.
+    </dd>
     <dt><dfn data-lt="terms" class="preserve">term</dfn></dt>
     <dd>
-        A <a>term</a> is a ...</dd>
-    <dt><dfn data-lt="traverse" class="preserve">traversal</dfn></dt>
+        A <a>term</a> is the short-hand alias of a <a>namespace</a> used in
+        compact <a>names</a>.</dd>
+    <dt><dfn data-lt="traverse|traversing" class="preserve">traversal</dfn></dt>
     <dd>
-        <a>Traversal</a> is a ...</dd>
-    <dt><dfn data-lt="trees" class="preserve">tree</dfn></dt>
+        <a>Traversal</a> is the process of <a>navigating</a> from the <a>root node</a>
+        and a <a>node</a> using a <a>path</a>. See [[[#traversal]]].</dd>
+    <dt><dfn data-lt="trees|subtree" class="preserve">tree</dfn></dt>
     <dd>
-        A <a>tree</a> is a set of <a>nodes</a> connected with <em>parent-child</em> relationships.</dd>
-    <dt><dfn data-lt="type" class="preserve">type</dfn></dt>
+        A <a>tree</a> is a set of <a>nodes</a> connected with <a>parent-child relationships</a>.
+        A connected subgraph of a <a>tree</a> is referred to as a <a>subtree</a>.</dd>
+    <dt><dfn data-lt="types|typed|type system|node type|node types" class="preserve">type</dfn></dt>
     <dd>
-        <a>Type</a> is a ...</dd>
+        A <a>type</a> is classification for a <a>node</a> that defines the set of
+        permitted <a>item definitions</a> it may contain.</dd>
     <dt><dfn data-lt="values" class="preserve">value</dfn></dt>
     <dd>
-        A <a>value</a> is a ...</dd>
+        A <a>value</a> holds the data of a <a>property</a> and is subject to a
+        <a>value type</a> and <a>value constraints</a>. They can be either
+        single-valued or multi-valued.</dd>
+    <dt><dfn data-lt="value constraints" class="preserve">value constraint</dfn></dt>
+    <dd>
+        A <em>value constraint</em> restricts the range of possible values for a <a>value</a>.</dd>
     <dt><dfn data-lt="value types" class="preserve">value type</dfn></dt>
     <dd>
-        A <a>value type</a> is a ...</dd>
-    <dt><dfn data-lt="versionables" class="preserve">versionable</dfn></dt>
+        A <a>value type</a> defines the data type of <a>values</a> held by a <a>property</a> identified by a <a>datatype
+            IRI</a>. Common examples are <code>type:string</code> and <code>type:long</code>.
+        See [[[#property-required-type]]].</dd>
+    <dt><dfn data-lt="versionables|versionable node|versionable nodes" class="preserve">versionable</dfn></dt>
     <dd>
-        A <a>versionable</a> is a ...</dd>
-    <dt><dfn data-lt="versions" class="preserve">version</dfn></dt>
+        A <a>versionable</a> is a type of <a>node</a> that may be stored within <a>version storage</a>
+        as a <a>version</a>. Only <a>versionable</a> <a>nodes</a> may be checked-in or checked-out.
+        See [[[#versioning]]] and specifically [[[#versionable-nodes]]].
+    </dd>
+    <dt><dfn data-lt="versions|version node|version nodes" class="preserve">version</dfn></dt>
     <dd>
-        A <a>version</a> is a ...</dd>
+        A <a>version</a> is a <a>node</a> held in <a>version storage</a> that represents a
+        checked-in version of a <a>node</a> held in the <a>working tree</a>.
+        See [[[#version-metadata]]].</dd>
+    <dt><dfn data-lt="version labels|label|labels" class="preserve">version label</dfn></dt>
+    <dd>
+        A <em>version label</em> is a string identifier used to locate a <a>version</a>.
+        See [[[#version-labels]]].
+    </dd>
+    <dt><dfn data-lt="version histories" class="preserve">version history</dfn></dt>
+    <dd>
+        The <em>version history</em> of a <a>versionable node</a> is the set of all
+        its <a>versions</a>. See [[[#version-history]]].
+    </dd>
+    <dt><dfn data-lt="version storage" class="preserve">version storage</dfn></dt>
+    <dd>
+        A region of metadata outside of the <a>working tree</a> for the storage of tracked <a>versions</a>
+        of <a>nodes</a>.
+    </dd>
+    <dt><dfn data-lt="versionable changes" class="preserve">versionable change</dfn></dt>
+    <dd>
+        A <em>versionable change</em> is a change made to a <a>versionable</a> in the <a>working tree</a>
+        that represents a change to the <a>base version</a>.
+    </dd>
+    <dt><dfn data-lt="versioned references" class="preserve">versioned reference</dfn></dt>
+    <dd>
+        A <em>versioned reference</em> is a <a>reference</a> that uses an <a>annotation</a> to specify
+        an additional <a>version label</a> allowing clients to resolve that <a>reference</a> to a
+        specific <a>version</a>.
+    </dd>
+    <dt><dfn data-lt="versionable states|versionable tree|versionable subtree|versioned state"
+            class="preserve">versionable state</dfn>
+    </dt>
+    <dd>
+        The <em>versionable state</em> of a <a>versionable</a> includes the <a>versionable node</a>
+        and a subset of its descendent subtree depending on the <a>on-parent-version</a> state of
+        its <a>child nodes</a>.
+    </dd>
+    <dt><dfn data-lt="working trees" class="preserve">working tree</dfn></dt>
+    <dd>
+        The <em>working tree</em> represents the current head state of the
+        metadata against which changes are written and read. The <em>working tree</em> is
+        contrasted with other <a>entities</a> such as those present within <a>version storage</a>
+        or repository-specific <a>entities</a> such as the <a>namespace registry</a>
+        or the <a>repository node</a>. See [[[#working-tree]]].</dd>
 </dl>

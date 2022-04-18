@@ -1,9 +1,19 @@
 <!DOCTYPE html>
 <html>
 
+<!--
+    Editorial notes:
+    * Anchors are used for terms only the first time it's used within a section. This is 
+      to avoid extensive and noisy hyperlink which might be overburdening for the reader. 
+
+    Todos:
+    * Complete terms list 
+    * 
+-->
+
 <head>
     <meta charset="utf-8" />
-    <title>Hierarchical Metadata Framework v1.0</title>
+    <title>Hierarchical Metadata Framework - Core Model v1.0</title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
     <script src="../common/common.js" class="remove" defer></script>
     <script class="remove">
@@ -34,18 +44,25 @@
     <p class="copyright">Copyright...</p>
     <section id="abstract">
         <p>
-            This document describes the Hierarchical Metadata Framework (HMF), a standard model and
-            framework for hierarchical & linked metadata. HMF provides a comprehensive framework
-            addressing many aspects of metadata representation including domain modelling, versioning, identity &
-            location, navigation, namespacing, reasoning, reification and so on.
+            This specification describes the Hierarchical Metadata Framework (HMF) core model, a standard model and
+            framework for hierarchical & linked metadata. HMF addresses many aspects of metadata
+            representation including domain modelling, versioning, identity & location, navigation, namespacing,
+            reasoning, reification and so on. HMF serves as the foundation for applications dealing with
+            the metadata trees and graphs at the heart of modern web and media organisations.
+        </p>
+        <p>
+            HMF is a framework encompassing both the storage and representation of hierarchical metadata as well
+            as the semantics of operations over that metadata. This specification therefore must be complimented
+            by a concrete document syntax for the serialization of metadata and a repository implementation providing
+            the APIs for those operations.
         </p>
         <p>
             HMF takes inspiration from a variety of specifications including [[[JSON-LD11]]], [[[RDF-CONCEPTS]]],
             [[[XML]]] and <a
                 href="https://developer.adobe.com/experience-manager/reference-materials/spec/jcr/2.0/index.html">Content
-                Repository for Java Technology API Specification (JSR-283)</a>. HMF is intended to provide an
-            abstract base model upon which concrete vocabularies can be built.
+                Repository for Java Technology API Specification (JSR-283)</a>.
         </p>
+
     </section>
     <section id="sotd" class="override">
         <h2>Status of this Document</h2>
@@ -126,7 +143,7 @@
                     conceptually identical to copying files and folders on a filesystem and allows metadata to be
                     organised and managed whilst preserving structure.</dd>
                 <dt>Child Node Constraints</dt>
-                <dd>HMF allows <a>child node constraints</a> to dictate which child-types are permitted on a
+                <dd>HMF allows <a>child node type definitions</a> to dictate which child-types are permitted on a
                     <a>node</a>.
                     Using child node constraints, we can build metadata trees with <em>strong guarantees</em> about the
                     validity of both data and structure.
@@ -176,9 +193,10 @@
         <p>
             This document provides the <em>abstract</em> model for <abbr
                 title="Hierarchical Metadata Framework">HMF</abbr>, defining structure and semantics
-            independent of any particular representation, encoding or concrete syntax. This separation allows for
-            concrete vocabularies to be defined external to this document each providing their own model representation
-            for metadata interchange and delivery.
+            independent of any particular document representation, encoding or concrete syntax. This separation allows
+            for concrete vocabularies to be defined external to this document each providing their own model
+            representation for metadata interchange and delivery. See [[[#concrete-hdf-syntax]]] for a deeper discussion
+            of <a>concrete HMF syntaxes</a>.
         </p>
 
         <section class="informative">
@@ -321,12 +339,12 @@
                     the <a>properties</a> and <a>relationships</a> of a <a>node</a>. For example, a
                     <a>node</a> may contain a <a>property</a> named <code>title</code> with a value,
                     however we may want to record additional information such as certainty scores, weights,
-                    temporal restrictions, permissions and provenance information. Annotations are
-                    therefore <a>properties</a> <em>about <a>properties</a> or <a>relationships</a></em>.
+                    temporal restrictions, permissions and provenance information. Annotations solve
+                    this by providing <a>properties</a> <em>about <a>properties</a> or <a>relationships</a></em>.
                 </p>
                 <p>
-                    The following illustration shows annotation properties capturing additional information
-                    about the <code>title</code> <a>property</a>; the timestamp of when the data was
+                    The following illustration show an annotation property capturing additional information
+                    about the <code>title</code> <a>property</a>, specifically the timestamp of when the data was
                     <code>provided</code>.
                     We might also choose to store which data source provided this property or when the
                     information is due to expire or need reviewing:
@@ -339,10 +357,11 @@
 
                 <p>
                     An annotation can also be applied to a <a>relationship</a> to capture additional
-                    information about the relation. An annotation may contain a reference to another
-                    <a>node</a> offering a way to indirectly link <a>nodes</a> to both <a>properties</a>
-                    and child <a>relationships</a>. Annotations are versioned along with the <a>node</a>
-                    so that the annotated state is captured alongside checked-in node state.
+                    information about the relation, such as the expected type of the referred <a>node</a>.
+                    An annotation may contain a reference to another <a>node</a> offering a way to
+                    indirectly link <a>nodes</a> to both <a>properties</a>and child <a>relationships</a>.
+                    Annotations are versioned along with the <a>node</a> so that the annotated state is
+                    captured alongside checked-in node state.
                 </p>
 
                 <p>
@@ -368,6 +387,44 @@
                 This section describes how HMF uses <a>items</a> to store and organise metadata.
             </p>
         </section>
+
+
+        <section>
+            <h3 id="entities">Entities</h3>
+            <p>
+                The term <a>entity</a> refers to anything in the repository that may have an <a>identity</a>
+                (as expressed as an IRI) and/or <a>location</a> and may be represented using some vocabulary.
+                <dl>
+                    <dt>nodes</dt>
+                    <dd>All <a>nodes</a> have an identity and location. See [[[#nodes]]].</dd>
+                    <dt>properties</dt>
+                    <dd><a>Properties</a> do not have an identity however they do have a <a>location</a></dd>
+                    <dt>schemas</dt>
+                    <dd>Implemented as a special type of <a>node</a>, they have an identity and can be represented</dd>
+                    <dt>namespace registry</dt>
+                    <dd>Provides the mapping </dd>
+                    <dt>repository</dt>
+                    <dd>The repository should be identifiable or otherwise resolveable and the repository
+                        configuration should be
+                    </dd>
+                </dl>
+            </p>
+            <p class="ednote" title="This section is weak">
+                Consider refining or removing this section. Could we identify an entry-point resource?
+            </p>
+            <section>
+                <h4>Aggregates</h4>
+                <p>
+                    HMF encourages the normalization of a domain model into trees. Typically, APIs and clients
+                    deal with trees rather than individual nodes and properties.
+                </p>
+                <p>
+                    An aggregate refers to a node and its versionable subtree.
+                </p>
+
+            </section>
+        </section>
+
         <section>
             <h3 id="nodes">Nodes</h3>
             <section class="informative">
@@ -403,9 +460,9 @@
                 <p>
                     A <i>child</i> is affected by its parent and ancestors in various ways. For example, <i>copy</i> and
                     <i>move</i> operations on a <a>node</a> will recursively copy the <a>node</a>'s descendents (see
-                    [[[#move-copy]]]). Permissions applied within a <a>repository</a> to a parent will <i>cascade</i> to
-                    descendents. The versioning strategy applied to a <a>node</a> will govern the <i>read-only</i>
-                    status of a child when the parent is checked-in (see [[[#versioning-semantics]]]).
+                    [[[#move-copy-delete]]]). Permissions applied within a <a>repository</a> to a parent will
+                    <i>cascade</i> to descendents. The versioning strategy applied to a <a>node</a> will govern the
+                    <i>read-only</i> status of a child when the parent is checked-in (see [[[#versioning]]]).
                 </p>
                 <p>
                     <a>Nodes</a> also act as a container for <a>properties</a> as described in [[[#properties]]].
@@ -417,15 +474,21 @@
                     together define what properties and child nodes are required or permitted on the name, and their
                     respective types. Nodes have an <em>is-a</em> relationship with each of its types.
                 </p>
+                <p>
+                    One interesting characteristic of node types is that they can declare child nodes and
+                    properties to be <em>auto-created</em>. That is, if no value is supplied during creation,
+                    the system will create the property or child node with default values. This is useful to
+                    eleviate the user from having to pre-create all mandatory child-nodes explicitly when the
+                    parent node is created. It can also provide users with example sub-trees ready for modification.
+                </p>
             </section>
 
             <section>
                 <h3 id="node-names">Node Names</h3>
                 <p>
                     Each <a>node</a> has a <a>name</a> used to locate the <a>node</a> among its siblings. The
-                    <a>node</a>
-                    <a>name</a> is used within <a>paths</a> to allow <a>nodes</a> to be located without knowing their
-                    <a>identity</a>. See [[[#names]]] for a full description of <a>names</a>.
+                    <a>node</a> <a>name</a> is used within <a>paths</a> to allow <a>nodes</a> to be located without
+                    knowing their <a>identity</a>. See [[[#names]]] for a full description of <a>names</a>.
                 </p>
             </section>
 
@@ -438,7 +501,7 @@
                 </p>
                 <p>
                     A <a>node</a> that can be retrieved using its <a>identity</a> is said to be <a>referenceable</a>.
-                    Storage systems would typically use an <a>index</a> to quickly locate a <a>referenceable</a>
+                    Storage systems would typically use an index to quickly locate a <a>referenceable</a>
                     <a>node</a> within a <a>repository</a>. Maintaining such an index incurs a cost in terms of
                     resources
                     and performance as it would need to be stored and maintained within the storage system. It
@@ -551,6 +614,9 @@
             </section>
         </section>
 
+        <section>
+            <h2 id="working tree">Working Tree</h2>
+        </section>
 
         <section>
             <h2 id="names">Names &amp; Namespaces</h2>
@@ -693,10 +759,7 @@
                 <p>
                     The following annotations enable functionality in HMF.
                 </p>
-                <p class="ednote" title="Should maybe expanded out into a separate section">
-                    It may be appropriate to have specific sections detailing the various
-                    standard annotations.
-                </p>
+
                 <table class="simple">
                     <thead>
                         <tr>
@@ -728,12 +791,41 @@
                         </tr>
                     </tbody>
                 </table>
+                <p class="ednote" title="Ordering should be part of the type not the node">
+                    We need to move the ordering to the property type definition.
+                </p>
+
             </section>
         </section>
     </section>
 
     <section>
-        <h2>Relationships & Navigation</h2>
+        <h2>Relationships &amp; Navigation</h2>
+        <section class="informative">
+            <h2>Introduction</h2>
+            <p>
+                HMF supports <em>type types</em> of relationships, <a>parent-child relationships</a> and <a>reference
+                    relationships</a>. Parent-child relationships organise metadata into a structure that allows
+                <a>items</a> to be <a>located</a> using <a>paths</a>.
+            </p>
+            <p>
+                Parent-child relationships are bidirectional connections between a node and its child. These
+                relationship
+                are more than just associations, they imply that parent <em>contains</em> its child nodes or that
+                child nodes <em>belong to</em> their parent. This containment or ownership relationship is
+                transitive meaning that operations on a node can affect all descendents. For example, a delete
+                (see [[[#move-copy-delete]]]) operation on a <a>node</a> is recursive and will delete all its child
+                nodes and the child nodes of their child nodes, and so on.
+            </p>
+            <p>
+
+            </p>
+            <p>
+                Reference relationships are a unidirectional connections between two arbitrary node. Reference
+                relationships
+                do not imply any
+            </p>
+        </section>
         <section>
             <h2>Relationships</h2>
             <section>
@@ -756,7 +848,7 @@
                     by their <a>path</a> from the <a>root</a> to the <a>node</a>.
                 </p>
                 <p>
-                    [[[#primary-child]]] allows clients to navigate through parent-child relationships without
+                    <a>Primary item</a> allows clients to navigate through parent-child relationships without
                     knowing the names of the intermediate
                 </p>
                 <p>
@@ -764,7 +856,7 @@
                 </p>
                 <p>
                     <abbr title="Hierarchical Metadata Framework">HMF</abbr> does not support <a>same name siblings</a>.
-                    That is, all children must have a unique name.
+                    That is, all children of a node must have a unique name.
                 </p>
             </section>
             <section>
@@ -772,6 +864,12 @@
                 <p>
                     A <a>node</a>
                 </p>
+                <section>
+                    <h3 id="referenceable-type">Referenceable Type</h3>
+                    <p>
+
+                    </p>
+                </section>
                 <section>
                     <h4 id="strong-weak-references">Strong and Weak References</h4>
                     <p>
@@ -790,7 +888,7 @@
                         <div class="illustration">
                             <p><img src="versioned-reference.png"
                                     alt="Annotation Specifying the Label of a Versioned Reference" width="700" /></p>
-                            <p class="caption">Annotation Specifying the Label of a Versioned Reference</p>
+                            <p class="caption">Annotation Specifying the Label of a <a>Versioned Reference</a></p>
                         </div>
                     </p>
                     <p>
@@ -802,20 +900,18 @@
 
             </section>
             <section>
-                <h3 id="primary-child">Primary Child</h3>
+                <h3 id="primary-item">Primary Item</h3>
                 <p>
-                    A [[[#node-type]]] can declare <em>one</em> of its children as primary, meaning that for all
-                    <a>nodes</a> of
-                    that type, that child is accessible in a way that does not require the name of the item. Primary
-                    children
-                    allow clients to traverse a <a>tree</a> without upfront knowledge of the <a>node</a> structure.
+                    A <a>node type</a> can declare <em>one</em> of its <a>item definitions</a> as primary, meaning that
+                    for all <a>nodes</a> of that type, that <a>item</a> is accessible in a way that does not require the
+                    name of the item. Primary item allow clients to traverse a <a>tree</a> without upfront knowledge of
+                    the <a>node</a> structure.
                 </p>
                 <p>
-                    A client could for example know to traverse a <a>tree</a>&quot;s primary children until a
-                    <a>node</a> of
-                    a given <a>type</a> or <a>name</a> is encountered. This would allow editors to modify a
-                    <a>tree</a>&quot;s
-                    structure, perhaps be adding or removing intermediate nodes, without breaking the client.
+                    A client could for example know to traverse a <a>tree</a>&quot;s primary item until a
+                    <a>node</a> of a given <a>type</a> or <a>name</a> is encountered. This would allow editors to modify
+                    a <a>tree</a>&quot;s structure, perhaps be adding or removing intermediate nodes, without breaking
+                    the client.
                 </p>
             </section>
         </section>
@@ -853,32 +949,65 @@
             </p>
         </section>
         <section>
-            <h4>Compact Name Segment</h4>
-        </section>
-        <section>
-            <h4>Expanded Name Segment</h4>
-        </section>
-        <section>
-            <h4>Versioned Name Segments</h4>
+            <h4 id="segment-types">Segment Types</h4>
 
+            <dl class="termlist" data-sort>
+                <dt>
+                    <dfn data-lt="compact name segments" class="preserve">compact name segment</dfn></dt>
+                <dd>The <a>compact name segment</a> uses the <a>item</a> <a>name</a> in its <a>compact IRI</a> form.
+                    That is, the segment consists of <a>prefix</a> and <a>local name</a> separated by a colon
+                    (<code>:</code>). For example, <code>acme:title</code>.
+                </dd>
+                <dt>
+                    <dfn data-lt="expanded name segments" class="preserve">expanded name segment</dfn></dt>
+                <dd>The <a>expanded name segment</a> uses the namespace and <a>local name</a> in their expanded form.
+                    That is, the segment consists of <a>namespace IRI</a> enclosed in braces <code>{}</code> and
+                    the <a>local name</a>. For example, <code>{http://acme.org/ns}title</code> </dd>
+                <dt>
+                    <dfn data-lt="versioned name segments" class="preserve">versioned name segments</dfn></dt>
+                <dd>The <a>versioned name segment</a> includes a name followed a version label enclosed in square
+                    brackets <code>[]</code>. For example, <code>acme:title[version1]</code> or
+                    <code>{http://acme.org/ns}title[version1]</code>
+                </dd>
+                <dt>
+                    <dfn data-lt="identifier segments" class="preserve">identifier segment</dfn></dt>
+                <dd>The <a>identifier segment</a> identifies a <a>node</a> using its unique identifer enclosed in
+                    square brackets. For example, <code>[208a03d6-bb81-11ec-8422-0242ac120002]</code>.</dd>
+                <dt>
+                    <dfn data-lt="versioned identifier segments" class="preserve">versioned identifier segment</dfn>
+                </dt>
+                <dd>The <a>versioned identifier segment</a> combines the <a>identifier segments</a> with a version
+                    label.
+                    It therefore consists of the identifier enclosed in square brackets <code>[]</code> followed
+                    by the version label in square brackets <code>[]</code>.
+                    For example, <code>[208a03d6-bb81-11ec-8422-0242ac120002][version1]</code></dd>
+                <dt>
+                    <dfn data-lt="root segments" class="preserve">root segment</dfn></dt>
+                <dd>The <a>root segment</a> identifies the root of the repository. It is identified as the absence of
+                    a value.
+                </dd>
+                <dt>
+                    <dfn data-lt="self segments" class="preserve">self segment</dfn>
+                </dt>
+                <dd>The <a>self segment</a> identifies the context node. It takes the form of a single period:
+                    <code>.</code>.
+                </dd>
+                <dt>
+                    <dfn data-lt="parent segment" class="preserve">parent segment</dfn></dt>
+                <dd> The <a>parent segment</a> identifies the parent of the context node. It takes the form of two
+                    periods:
+                    <code>..</code>.
+                </dd>
+            </dl>
         </section>
         <section>
-            <h4>Identifier Segments</h4>
+            <h4>Relative Paths & Context Nodes</h4>
+            <p>
+                Relative paths start with the <a>self segment</a>.
+            </p>
+        </section>
 
-        </section>
-        <section>
-            <h4>Versioned Identifier Segments</h4>
 
-        </section>
-        <section>
-            <h4>Root Segment</h4>
-        </section>
-        <section>
-            <h4>Self Segment</h4>
-        </section>
-        <section>
-            <h4>Parent Segment</h4>
-        </section>
         <section>
             <h3 id="path-lexical-form">Lexical Form</h3>
             <p>
@@ -910,16 +1039,32 @@
                 types of child <a>nodes</a> it may posses. ...
             </p>
             <p>
-                HMF provides <em>two forms</em> of <a>types</a>:
+                In HMF there are three types of type definition:
                 <ul>
-                    <li><em>Property Types</em> - indicates the data type of a property, whether it is
-                        mandatory, mulit-valued, a default value and some additional value constraints (such as
-                        a regular expression for <code>type:string</code> properties)</li>
-                    <li><em>Node Types</em> - indicates the set of allowed <a>properties</a> and
-                        child <a>nodes</a>, a <a>primary child</a> and the set of other <a>types</a> from which
-                        it inherits.</li>
+                    <li><em>Node Type Definition</em> - defines a node type within the model including which primary
+                        types in inherits from, which <a>mixin</a> types it carries, whether it declares a <a>primary
+                            item</a> and so on. It also acts as a container for <a>property type definitions</a> and
+                        <a>child node type definitions</a>.</li>
+                    <li><em>Property Type Definition</em> - defines the type and contraints of a <a>property</a>
+                        including its value type, whether it is single-valued or multi-values, whether it is
+                        mandatory and so on.
+                    </li>
+                    <li><em>Child Node Type Definition</em> - defines the type and constraints of a child node
+                        including its primary types, whether the child node is mandatory and details of how the
+                        child node should be auto-created if needed.</li>
                 </ul>
             </p>
+
+            <div class="illustration">
+                <img src="node-type-def.png" alt="Node Type Definition" width="600" />
+                <p class="caption">Shows a <a>node type definition</a> with the <a>name</a> <code>acme:content</code>.
+                    It declares two <a>properties</a> via two <a>property type definitions</a> for
+                    <code>acme:title</code>
+                    and <code>acme:genres</code>, along with a <a>residual</a> <a>child node definition</a> declaring
+                    that all child <a>nodes</a> of this <a>type</a> must be of the type <code>acme:show</code>.
+                </p>
+            </div>
+
             <p>
                 Node types may be dynamically modified within an application assuming the changes are compatible
                 with all <a>nodes</a> of that type. For example, a new <em>non-mandatory</em> field or a
@@ -934,24 +1079,213 @@
                 to metadata as it matures through the system.
             </p>
         </section>
+
+        <section class="informative">
+            <h3 id="node-types">Node Types</h3>
+            <section>
+                <h4 id="primary-type">Node Primary Type</h4>
+                <p>
+                    Every <a>node</a> has a single declared primary type. Nodes have an <em>is-a</em> relationship
+                    with the primary type. The primary type of a node typically defines the core characteristics of the
+                    node in the domain model. This is in contrast to mixin nodes which add additional and supplimentary
+                    functionality or metadata.
+                </p>
+                <p>Given that primary types may inherit from one another, a node can be said to have multiple types
+                    or formally, multiple <a>supertypes</a>. Implementations should provide the means for clients to
+                    acquire all supertypes of a node.
+                </p>
+                <p>
+                    The default primary type of a node is <code>hmf:base</code> (see [[[#builtin-primary-types]]]).
+                </p>
+            </section>
+            <section>
+                <h4>Mixin Types</h4>
+                <p>
+                    A <a>node</a> may have zero or more <a>mixin types</a>. Mixin types provide a way to compose
+                    functionality or key metadata (such as standardized metadata, see [[[#builtin-mixins]]])
+                    on a node. They are used to mark nodes as eligible for some model or repository feature such as
+                    <code>mix:annotated</code> (see [[[#annotations]]]) and <code>mix:versionable</code> (see
+                    [[[#versioning]]]).
+                </p>
+                <p>
+                    Mixin types may not be used as a primary type of a node, however they can be used as supertypes
+                    of primary types. Only mixin types may be supertypes of mixin types.
+                </p>
+            </section>
+            <section>
+                <h4 id="node-type-inheritance">Node Type Inheritance</h4>
+                <p>
+                    Both primary types and mixin types can take advantage of inheritance which allows a node type
+                    to inherit from a supertype or parent node type definition. Subtypes inherit the parent
+                    property and child node type definitions, including any such definitions themselves inherited
+                    from the parent&quot;s supertype. The resulting definition known as the <a>effective node type</a>
+                    is the sum of all inherited type definitions.
+                </p>
+                <p class="ednote" title="Define override rules">
+                    Expand by defining the inheritance rules when a subtype redefines a property name already
+                    defined on the parent.
+                </p>
+            </section>
+            <section>
+                <h4 id="multiple-inheritance">Multiple Inheritance</h4>
+                <p>
+
+                </p>
+            </section>
+            <section>
+                <h4>Updating the Primary Type</h4>
+                <p>
+                    The <a>primary type</a> of a node may be modified after node creation. This is a key capability
+                    of HMF since it allows for progressive typing during the lifecycle of a metadata <a>tree</a>.
+                    The primary type of a node may only be changed if all mandatory <a>items</a> are already present
+                    on that node.
+                </p>
+            </section>
+            <section>
+                <h4>Node Type Versioning</h4>
+                <p>
+                    Node types can be optionally versioned. Modifications to the node type will result in a version
+                    increment.
+                </p>
+                <p class="ednote" title="Needs expanding">
+                    Needs expanding
+                </p>
+            </section>
+        </section>
+        <section>
+            <h3 id="node-type-definition">Node Type Definition</h3>
+            <p>
+
+            </p>
+            <section>
+                <h4>Name</h4>
+                <p>
+                    Every node type registered with the repository has a unique <a>name</a>. The naming conventions for
+                    node types are the same as for items and are described in [[[#names]]].
+                </p>
+            </section>
+            <section>
+                <h4>Version</h4>
+                <p>
+                    Provides a version identifier (typically as an incrementing integer) for the node type.
+                </p>
+            </section>
+            <section>
+                <h4>Supertypes</h4>
+                <p>
+                    A primary node type (with the exception of <code>hmf:base</code>) must extend another node type (and
+                    may extend more than one node type). A <a>mixin</a> node type may extend another node type.
+                </p>
+            </section>
+            <section>
+                <h4>Is Abstract</h4>
+                <p>
+                    A node type may be declared abstract, meaning that it cannot be assigned as the primary or mixin
+                    node type of a node but can be used in the definition of other node types as a supertype.
+                    Abstract node types are therefore used to define common types that do not themselves function
+                    as a standalone node type.
+                </p>
+            </section>
+            <section>
+                <h4>Is Mixin</h4>
+                <p>
+                    A node type may be declared as either a <a>mixin type</a> or a <a>primary node type</a>.
+                    If it is declared as a <a>mixin type</a> then it may not be used as a primary type of a
+                    node however a primary type may inherit from a mixin type.
+                </p>
+            </section>
+            <section>
+                <h4>Primary Item</h4>
+                <p>
+                    A node type may specify one child item (property or node) by name as the primary item. A primary
+                    item is an item on a node that is considered <em>primary</em> or <em>default</em>, and may be
+                    accessed from the declaring node without requiring the <a>name</a>. Primary items are commonly
+                    used to allow clients to navigate through intervening until they reach a node of the desired
+                    type.
+                </p>
+            </section>
+            <section>
+                <h4>Property Type Definitions</h4>
+                <p>
+                    A node type typically (although not always) declares one or more <a>property type definitions</a>
+                    controlling which properties are restricted or permitted.
+                </p>
+            </section>
+            <section>
+                <h4>Child Node Type Definitions</h4>
+                <p>
+                    A node type typically (although not always) declares one or more <a>child node type definitions</a>
+                    controllnig which child nodes are restricted or permitted.
+                </p>
+            </section>
+            <section>
+                <h4>Node Type Documentation</h4>
+                <p>
+                    A <code>hmf:documentation</code> property may be added to a node type definition containing a
+                    <code>type:string</code> value.
+                </p>
+            </section>
+        </section>
         <section>
             <h3 id="property-type-definition">Property Definition</h3>
             <p>
-                Properties have a <a>type</a> which controls the values it may hold, such as <code>type:string</code>
-                or <code>type:integer</code>. When a property is defined within a <a>node type definition</a> it is
-                also subject to a <a>property type definition</a> declaring the following:
+                A <a>property definition</a> on a node controls the behaviour of a <a>property</a> and the <a>values</a>
+                it may contain. A <a>property definition</a> may declare the following:
                 <ul>
-                    <li><em>Value constraints</em> - </li>
-                    <li><em>Mandatory</em> - </li>
-                    <li><em>Auto-created</em></li>
-                    <li><em>Default value</em></li>
+                    <li><em>Name</em> - The <a>name</a> of the <a>property</a> to which this definition
+                        applies, or <code>*</code> if this definition is a <a>residual definition</a>, meaning that it
+                        applies to any additional properties with any names apart from those otherwise defined in this
+                        node type (see [[[#residual-definition]]]).</li>
+                    <li><em>Required type</em> - defines the datatype of the value held by the <a>property</a></li>
+                    <li><em>Value constraints - The value constraints on the property define the range of values that
+                            may be assigned to this property.</em></li>
+                    <li><em>Default value</em> - The value that the property will have if it is auto-created.</li>
+                    <li><em>Auto-created status</em> - Whether this property will be auto-created when its parent node
+                        is created. Only properties with a default value can be auto-created.</li>
+                    <li><em>Mandatory status</em> - A mandatory property is one that must exist. If a node of a type
+                        that specifies a mandatory property is created then any attempt to save that node without adding
+                        the mandatory property will fail. Since single-value properties either have a value or do not
+                        exist (there being no concept of the <code>null</code> value) this implies that a mandatory
+                        single-value property must have a value. A mandatory multi-value property on the other hand may
+                        have zero or more values.</li>
+                    <li><em>Mutliple values status</em> - Whether this property can have multiple values, meaning that
+                        it stores an array of values, not just one.
+                    </li>
+                    <li><em>Multiple values semantics status</em> - If the property contains multiple values,
+                        determines if the property has <em>list</em> or <em>set</em> semantics. List semantics
+                        indicates that the values are ordered. Set semantics indicates that the values are not ordered.
+                    </li>
+                    <li><em>On-Parent-Version status</em> - The On-Parent-Version status of specifies what happens to
+                        this property if a new version of its parent node is created (i.e. a checked-in is done on it).
+                    </li>
+                    <li><em>Description</em> - Provides a narrative description of the property.</li>
+
                 </ul>
             </p>
             <section>
-                <h4 id="property-value-type">Value Type</h4>
+                <h4>Name</h4>
                 <p>
-                    The following <i>standard</i> types are available, although a <a>repository</a>
-                    may choose to support additional <a>types</a>:
+                    The <a>name</a> of the <a>property</a> to which this definition
+                    applies, or <code>*</code> if this definition is a <a>residual definition</a>, meaning that it
+                    applies to any additional properties with any names apart from those otherwise defined in this
+                    node type (see [[[#residual-definition]]]).
+                </p>
+            </section>
+            <section>
+                <h4 id="residual-property-definition">Residual Property Definition</h4>
+                <p>
+                    When the <a>name</a> attribute of the node type definition is <code>*</code> (asterisk),
+                    it specifies that the definition is <a>residual</a>, meaning that its scope consists of all other
+                    properties
+                    (child nodes), which are not otherwise scoped by any of the other property (child node) definitions
+                    in the effective node type of the node (see [[[#effective-node-type]]]).
+                </p>
+            </section>
+            <section>
+                <h4 id="property-required-type">Standard Required Types</h4>
+                <p>
+                    The following <i>standard</i> required types are defined, although a <a>repository</a> may choose to
+                    support additional <a>types</a>:
                     <table class="simple">
                         <thead>
                             <tr>
@@ -997,7 +1331,8 @@
                             <tr>
                                 <td>weakreference</td>
                                 <td><code>type:weakreference</code></td>
-                                <td>An identifer to a referenceable node <i>without</i> enforced referential integrity.
+                                <td>An identifer to a referenceable node <i>without</i> enforced referential
+                                    integrity.
                                 </td>
                             </tr>
                             <tr>
@@ -1014,38 +1349,28 @@
                             <tr>
                                 <td>path</td>
                                 <td><code>type:path</code></td>
-                                <td>A <a>path</a> in either <a>absolute</a> or <a>relative</a> form represented in its
+                                <td>A <a>path</a> in either <a>absolute</a> or <a>relative</a> form represented in
+                                    its
                                     lexical (string) form</td>
+                            </tr>
+                            <tr>
+                                <td>undefined</td>
+                                <td><code>type:undefined</code></td>
+                                <td>A special type indicating that there is no required type. This is only used
+                                    in type declarations and all properties in the <a>tree</a> must have
+                                    one of the other available types. <code>type:undefined</code> is commonly used
+                                    in <a>residual definitions</a>, see [[[#residual-property-definition]]]
+                                    and [[[#residual-child-node-definition]]].</td>
                             </tr>
                         </tbody>
                     </table>
                 </p>
             </section>
             <section>
-                <h4 id="single-multi-value-properties">Single & Multi-Valued Property</h4>
-                <p>
-
-                </p>
-            </section>
-            <section>
-                <h4 id="mandatory-properties">Mandatory Properties</h4>
-                <p>
-                    A property may be marked as <em>mandatory</em>. If the property is single-valued then a
-                    value must be present for that property and there is no <code>null</code> value. If the
-                    property is multi-valued it may have zero or more values.
-                </p>
-            </section>
-            <section>
-                <h4>Value Ordering</h4>
-                <p>
-                    Multi-value properties can be declared as <em>arrays</em> or <em>sets</em>.
-                </p>
-            </section>
-            <section>
                 <h3>Values Constraints</h3>
                 <p>
                     Value constraints limit the range of possible values that a property can hold. They are
-                    an extension to the restrictions enforced by the value type (see [[[#property-value-type]]])
+                    an extension to the restrictions enforced by the value type (see [[[#property-required-type]]])
                     and allow for further modelling of the metadata domain.
                 </p>
                 <section>
@@ -1108,7 +1433,8 @@
             <section>
                 <h3 id="auto-created-property">Auto-created Values</h3>
                 <p>
-                    A property may be declared auto-created, meaning that it is automatically created upon creation of
+                    A property may be declared auto-created, meaning that it is automatically created upon creation
+                    of
                     its parent <a>node</a> or the moment that the property becomes part of a node&quot;s type. If no
                     value is supplied during <a>node</a> creation then the default value is used (see
                     [[[#default-values-property]]]). Auto-created values are especially useful when
@@ -1124,119 +1450,124 @@
                 </p>
             </section>
             <section>
+                <h4 id="mandatory-properties">Mandatory status</h4>
+                <p>
+                    A property may be marked as <em>mandatory</em>. If the property is single-valued then a
+                    value must be present for that property and there is no <code>null</code> value. If the
+                    property is multi-valued it may have zero or more values. If a <a>node</a> defines a
+                    property that single-valued and mandatory then it must be supplied during node-creation
+                    otherwise an error is raised.
+                </p>
+            </section>
+            <section>
+                <h4 id="single-multi-value-properties">Mutliple values status</h4>
+                <p>
+                    Whether this property can have multiple values, meaning that
+                    it stores an array of values, not just one.
+                </p>
+            </section>
+            <section>
+                <h4>Collection semantics</h4>
+                <p>
+                    If the property contains multiple values, determines if the property has <em>list</em> or
+                    <em>set</em> semantics. List semantics indicates that the values are ordered. Set semantics
+                    indicates that the values are not ordered.
+                </p>
+            </section>
+            <section>
+                <h4>On-Parent-Version status</h4>
+                <p>
+                    The On-Parent-Version (OPV) status of specifies what happens to this property if a new version of
+                    its
+                    parent node is created (i.e. a checked-in is done on it). See [[[#on-parent-version]]].
+                </p>
+            </section>
+            <section>
                 <h3 id="protected-property">Protected Properties</h3>
                 <p>
-                    <a>Protected</a> properties are properties that are managed by the implementation and
+                    Protected properties are properties that are managed by the implementation and
                     cannot be modified by clients. Protected properties are read-only by clients and
                     read-write for implementations.
                 </p>
             </section>
             <section>
-                <h4>Property Type Documentation</h4>
+                <h4>Description</h4>
                 <p>
-                    Properties may optionally carry narrative documentation about its role of purpose to support
-                    auto-generated documentation or to drive a user interface.
+                    Holds a narrative description of the <a>property</a>.
                 </p>
             </section>
         </section>
         <section>
-            <h3 id="node-types">Node Types</h3>
-            <section>
-                <h4>Node Primary Type</h4>
-                <p>
-                    Every <a>node</a> has a single declared primary type. Nodes have an <em>is-a</em> relationship
-                    with the primary type. The primary type of a node typically defines the core characteristics of the
-                    node in the domain model. This is in contrast to mixin nodes which add additional and supplimentary
-                    functionality or metadata.
-                </p>
-                <p>Given that primary types may inherit from one another, a node can be said to have multiple types
-                    or formally, multiple <a>supertypes</a>. Implementations should provide the means to acquire all
-                    supertypes of a node.
-                </p>
-                <p>
-                    The default primary type of a node is <code>hmf:base</code> (see [[[#builtin-primary-types]]]).
-                </p>
-            </section>
-            <section>
-                <h4>Mixin Types</h4>
-                <p>
-                    A <a>node</a> may have zero or more <a>mixin types</a>. Mixin types provide a way to compose
-                    functionality or key metadata (such as standardized metadata, see [[[#builtin-mixins]]])
-                    on a node. They are used to mark nodes as eligible for some model or repository feature such as
-                    <code>mix:annotated</code> (see [[[#annotations]]]) and <code>mix:versionable</code> (see
-                    [[[#versioning]]]).
-                </p>
-                <p>
-                    Mixin types may not be used as a primary type of a node, however they can be used as supertypes
-                    of primary types. Only mixin types may be supertypes of mixin types.
-                </p>
-            </section>
-            <section>
-                <h4 id="node-type-inheritance">Node Type Inheritance</h4>
-                <p>
-                    Both primary types and mixin types can take advantage of inheritance.
-                </p>
-
-            </section>
-            <section>
-                <h4>Updating the Primary Type</h4>
-                <p>
-                    The <a>primary type</a> of a node may be modified after node creation. This is a key capability
-                    of HMF since it allows for progressive typing during the lifecycle of a metadata <a>tree</a>.
-                    The primary type of a node may only be changed if all mandatory <a>items</a> are already present
-                    on that node.
-                </p>
-            </section>
-        </section>
-        <section>
-            <h3 id="node-type">Node Definition</h3>
+            <h3 id="child-node-definition">Child Node Definition</h3>
             <p>
-
+                TODO
             </p>
+            <section>
+                <h4>Name</h4>
+                <p>
+                    The <a>name</a> of the child node to which this definition applies or the wildcard <code>*</code> if
+                    this definition is a <a>residual definition</a>, meaning that it applies to any additional child
+                    nodes with any names apart from those otherwise defined in this node type (see
+                    [[[#residual-child-node-definition]]]).
+                </p>
+            </section>
+            <section>
+                <h4 id="residual-child-node-definition">Residual Child Node Definition</h4>
+                <p>
+                    When the <a>name</a> attribute of the node type definition is <code>*</code> (asterisk),
+                    it specifies that the definition is <a>residual</a>, meaning that its scope consists of all other
+                    child nodes, which are not otherwise scoped by any of the other child node definitions in the
+                    effective node type of the node (see [[[#effective-node-type]]]).
+                </p>
+            </section>
+            <section>
+                <h4>Required primary types</h4>
+                <p>
+                    If it specifies only a single node type <code>N</code> then the primary node type of this child node
+                    must be <code>N</code> or a subtype of <code>N</code>. If this attribute specifies multiple node
+                    types
+                    <code>N<sub>1</sub></code>, <code>N<sub>2</sub></code>,<code>...</code>, <code>N<sub>M</sub></code>
+                    then the primary node type of this child node must be a subtype of all the types
+                    <code>N<sub>1</sub></code>, <code>N<sub>2</sub></code>, … <code>N<sub>M</sub></code>.
+                    See [[[#multiple-inheritance]]] for a discussion of type inheritance and subtyping rules.
+                </p>
+            </section>
+            <section>
+                <h4>Default primary type</h4>
+                <p>
+                    This is the primary node type automatically assigned if no node type information is specified when
+                    the node is created.
+                </p>
+            </section>
+            <section>
+                <h4>Auto-create status</h4>
+                <p>
+                    Governs whether this child node will be auto-created when its parent node is created.
+                </p>
+            </section>
+            <section>
+                <h4>Mandatory status</h4>
+                <p>
+                    Governs whether the child node is mandatory. A mandatory child node is one that must exist. If a
+                    mandatory child node is missing from a parent node then save on the parent node will fail.
+                </p>
+            </section>
+            <section>
+                <h4>On-Parent-Version status</h4>
+                <p>
+                    This specifies what to do with the child node if its parent node is versioned. See See
+                    [[[#on-parent-version]]].
+                </p>
+            </section>
 
-            <section>
-                <h4 id="">Child Constraints</h4>
-                <p>
-
-                </p>
-            </section>
-            <section>
-                <h4 id="child-constraints">Child Constraints</h4>
-                <p>
-
-                </p>
-            </section>
-            <section>
-                <h4>Type Composition</h4>
-                <p>
-                    Mixin Types
-                </p>
-            </section>
-            <section>
-                <h4>Abstract Types</h4>
-                <p>
-
-                </p>
-            </section>
-            <section>
-                <h4>Type Inheritance</h4>
-                <p>
-
-                </p>
-            </section>
-            <section>
-                <h3 id="auto-created-node">Auto-created Nodes</h3>
-                <p>
-
-                </p>
-            </section>
-            <section>
-                <h4>Node Type Documentation</h4>
-                <p>
-                    A <code>hmf:documentation</code> property may be added to a node type definition containing a
-                    <code>type:string</code> value.
-                </p>
-            </section>
+        </section>
+        <section>
+            <h3 id="effective-node-type">Effective Node Type</h3>
+            <p></p>
+        </section>
+        <section>
+            <h3 id="residual-definition">Residual Definitions</h3>
+            <p></p>
         </section>
         <section>
             <h3>Builtin Types</h3>
@@ -1258,11 +1589,42 @@
                             <td>
                                 This is the base type of all primary node types and therefore all nodes in a
                                 HMF model. It exposes the mandatory property <code>hmf:primaryType</code>
-                                and the optional property <code>hmf:mixinTypes</code>.
+                                and the optional property <code>hmf:mixinTypes</code>. This is the only
+                                type in the model that does not itself extend another type.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>hmf:versionHistory</code></td>
+                            <td>
+                                Holds the <a>version history</a> of a <a>node</a> in the <a>working tree</a>.
+                                It acts as the parent of all <a>version nodes</a> of a <a>versionable node</a>
+                                and holds the <a>version labels</a> for the various <a>versions</a>.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>hmf:version</code></td>
+                            <td>
+                                Holds metadata about a <a>version node</a> including the date that it was
+                                created and the sets of ancestor and predecessor nodes. The version node
+                                also contains the <a>frozen node</a> holding the snapshot-state of the
+                                <a>versionable node</a> for this version. See [[[#version-metadata]]].
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>hmf:frozenNode</code></td>
+                            <td>
+                                Holds a copy of the <a>versionable node</a> in version storage. It also
+                                holds copies of the core metadata in the properties <code>hmf:frozenPrimaryType</code>,
+                                <code>hmf:frozenMixinTypes</code> and <code>hmf:frozenUuid</code> (as not to collide
+                                with the properties already held on <code>hmf:frozenNode</code>). See
+                                [[[#version-metadata]]].
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </section>
+
+            <section>
                 <h4 id="builtin-mixins">Builtin Mixin Types</h4>
                 <table class="simple">
                     <thead>
@@ -1308,10 +1670,18 @@
                                 Indicates that the <a>node</a> carries annotations. See [[[#annotations]]]
                             </td>
                         </tr>
+                        <tr>
+                            <td><code>mix:referenceable</code></td>
+                            <td>
+                                Indicates that the <a>node</a> may be the subject of a <a>reference</a>. See
+                                [[[#references]]].
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </section>
         </section>
+    </section>
 
     </section>
     <section>
@@ -1320,7 +1690,7 @@
             <h3>Introduction</h3>
             <p>
                 Versioning is enabled via <a>version storage</a>; a separate area of the metadata
-                model dedicating to storing and managing historical snapshots of <a>nodes</a> and their
+                model dedicated to storing and managing historical snapshots of <a>nodes</a> and their
                 <a>subtrees</a>. Versionable <a>nodes</a> (i.e. those with the type <code>mix:versionable</code>)
                 hold references to the historical <a>node</a> snapshots so that they can be discovered
                 and acted upon. A <a>node</a> that does not carry the <code>mix:versionable</code> type
@@ -1328,8 +1698,8 @@
             </p>
             <p>
                 A <a>versionable</a> <a>node</a> can be <em>checked-in</em> and <em>checked-out</em>.
-                Checking-in creates a <em>new version</em> of the node state along with its versionable
-                subtree (see [[[#verisonable-subtree]]]). This new version is appended to the version
+                Checking-in creates a <em>new version</em> of the node state along with its <a>versionable
+                    subtree</a>. This new version is appended to the version
                 history (see [[[#version-history]]]) held within <a>version storage</a> where it can be
                 later accessed.
             </p>
@@ -1342,33 +1712,264 @@
                 </p>
             </div>
             <p>
-                Checking-in also makes the node <em>read-only</em>.
-            </p>
-            <p>
                 One of the versions in the version history is marked as the <a>base version</a>. The base
                 version is the version against which modifications to a checked-out node are made. That is,
                 any changes between the base version and the checked-out node are considered as <a>
                     versionable changes</a>. When node
             </p>
+            <p>
+                The rules that govern what the version snapshot will include are governed entirely by the <em>on-parent
+                    versioning</em> (OPV) attribute of the property definitions and child node definitions defined by
+                the primary type and/or mixin types of the versionable node. That is, the <a>types</a> of a <a>node</a>
+                prescribe how their data will be managed with respect to versionable state.
+            </p>
+            <p>
+                Each version within a <a>version history</a> can be identified through zero or more labels.
+
+            </p>
         </section>
-        <h3>Versionable Nodes</h3>
-        <h3>Checked-in &amp; Checked-out State</h3>
-        <h3>Version Labels</h3>
-        <h3 id="versionable-subtree">Versionable Subtree</h3>
-        <h3>On-Parent Version</h3>
-        <h3>Referencing a Version</h3>
-        <h3>Version Tags</h3>
-        <h3 id="version-history">Version History</h3>
+        <section>
+            <h3 id="versionable-nodes">Versionable Nodes</h3>
+            <p>
+                All <a>nodes</a> (subject to the On-Parent-Version rules outlined in [[[#on-parent-version]]]) may be
+                tracked with HMF versioning however only nodes that have the <a>type</a> <code>mix:versionable</code>
+                may be checked-in and checked-out (see [[[#checked-in-out]]]). That is, a <a>version node</a> may only
+                track a <a>versionable node</a>. Only versionable nodes-trees may be restored.
+            </p>
+        </section>
+        <section>
+            <h3 id="checked-in-out">Checked-in &amp; Checked-out State</h3>
+            <p>
+                A new version of a versionable node is created by checking-in a versionable node. In this state the node
+                and its versionable subgraph are read-only. The node can then be checked-out at which point it becomes
+                writable again.
+            </p>
+            <p>
+                Checking-in an already checked-in node does nothing. Checking-in a non-versionable node is not
+                permitted.
+                Checking-in a <a>versionable</a> node stores that node&quot;s <a>versionable state</a> and updates the
+                <a>base version</a> of the node.
+            </p>
+        </section>
+        <section>
+            <h3>Accessing Versions and Versioned State</h3>
+            <p>
+                <a>Versionable nodes</a> inherit the <a>reference property</a> <code>hmf:versionHistory</code>
+                from <code>mix:versionable</code>. This is a <a>strong reference</a> which can be followed
+                to a node of type <code>hmf:versionHistory</code>. The <code>hmf:versionHistory</code> node
+                has a set of child nodes of type <code>hmf:version</code> which represent each tracked
+                (checked-in) version.
+            </p>
+            <div class="illustration">
+                <p><img src="accessing-versions.png" alt="Accessing Version State" width="600" /></p>
+                <p class="caption">
+                    Node <code>N<sub>1</sub></code> holds references to the <a>version history</a> and
+                    <a>base version</a> through the properties <code>hmf:versionHistory</code> and
+                    <code>hmf:baseVersion</code> respectively. The version history contains a child relationships
+                    to each version (i.e. with type <code>hmf:version</code>). The <code>hmf:version</code>
+                    node itself holds a <a>frozen node</a> which holds the checked-in state of the node
+                    <code>N<sub>1</sub></code>.
+                </p>
+            </div>
+            <p>
+                The <code>hmf:baseVersion</code> reference on the versionable node holds a reference to the
+                version from which changes to the node will be tracked, known as the <a>base version</a>.
+                That is, when a node is checked out it holds the state from the <a>base version</a>. A fresh
+                check-in will create a new successor in the version history and the base version will be
+                moved to the version created by the check-in.
+            </p>
+        </section>
+        <section>
+            <h3 id="version-history">Version History</h3>
+            <p>
+            </p>
+        </section>
+        <section>
+            <h3 id="frozen-node">Frozen Node</h3>
+            <p>
+            </p>
+        </section>
+
+        <section>
+            <h3 id="version-metadata">Version Metadata</h3>
+            <p>
+                The following fields are available on the version, as defined by the type <code>hmf:version</code>:
+            </p>
+            <table class="simple">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Multiple Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>hmf:created</code></td>
+                        <td><code>type:date</code></td>
+                        <td>single</td>
+                        <td>
+                            Provides the date that the version was created
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>hmf:predecessors</code></td>
+                        <td><code>type:reference</code></td>
+                        <td>multiple</td>
+                        <td>
+                            Provides the direct predecessors of the version history. This is typically
+                            a single predecessor.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>hmf:successors</code></td>
+                        <td><code>type:reference</code></td>
+                        <td>multiple</td>
+                        <td>
+                            Provides the direct successors of the version history. This is typically
+                            a single successor.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h3 id="version-labels">Version Labels</h3>
+            <p>
+                A zero or more labels can be applied to the version during check-in. The version may be later retrieved
+                using one of the labels. Two versions cannot have the same label.
+            </p>
+        </section>
+        <section>
+            <h3 id="versionable-state">Versionable State</h3>
+            <p>
+                The versionable state of a versionable node is typically a subset of its subtree. That is, when a node
+                is versioned it may also include some or all of its descendent nodes and their properties.
+            </p>
+            <p>
+                The descendents of a <a>versionable node</a> <code>N</code> that belong to its <a>versionable state</a>
+                are determined by the <a>on-parent version</a> status of the child nodes of <code>N</code> (grand-child
+                nodes of <code>N</code> do not have their <a>on-parent-version</a> status considered, however they
+                do form part of the versionable state). This is best described through an illustration:
+            </p>
+            <div class="illustration">
+                <p><img src="versionable-state.png" alt="Versionable State of N" width="800" /></p>
+                <p class="caption">
+                    Illustrates the <a>versionable state</a> of node <code>N</code>. <code>N</code> has
+                    three child nodes each with different <a>on-parent-version</a> declarations.
+                    Child node <code>C<sub>1</sub></code> has an OPV of <code>COPY</code> meaning its
+                    child <code>G<sub>1</sub></code> is versionable state.
+                    <code>C<sub>2</sub></code>
+                    has an OPV of <code>IGNORE</code> meaning it is excluded from the versionable state
+                    along with its child.
+                    Child node <code>C<sub>3</sub></code> has as an OPV of <code>VERSION</code> meaning
+                    that the versionable state becomes a reference to the version history of
+                    <code>C<sub>3</sub></code>: <code>V<sub>C3</sub></code>.
+                </p>
+            </div>
+            <p>
+                The details of the various OPV values are described in [[[#on-parent-version]]].
+            </p>
+        </section>
+        <section>
+            <h3 id="on-parent-version">On-Parent-Version (<abbr title="On-Parent-Version">OPV</abbr>)</h3>
+            <p>
+                When a <a>versionable</a> <a>node</a> <code>N</code> is checked in, all of the child nodes will be
+                evaluated based upon the <em>child node definition</em> (see [[[#child-node-definition]]]) for those
+                nodes on <code>N</code>.
+                That is, given a child <code>C</code>, the applicable child node definition from the primary type or
+                mixin type <code>N<sub>def</sub>C</code> on <code>N</code> for <code>C</code> will be considered as
+                follows:
+                <ul>
+                    <li>if the child node definition <code>N<sub>def</sub>C</code> has an OPV of <code>copy</code>, then
+                        the entire subgraph starting at node <code>C</code> will be
+                        copied into the version snapshot, regardless of the descendants' OPV settings</li>
+                    <li>if the child node definition <code>N<sub>def</sub>C</code> has an OPV of <code>version</code>,
+                        then the snapshot will simply contain a placeholder node (of primary type
+                        <code>hmf:versionedChild</code>') pointing to the versioned child node</li>
+                    <li>if the child node definition <code>N<sub>def</sub>C</code> has an OPV of <code>abort</code>,
+                        then an exception will be thrown </li>
+                    <li>if the child node definition <code>N<sub>def</sub>C</code> has an OPV of <code>ignore</code> or
+                        <code>initialize</code> or <code>compute</code>, then the child node will not be included in the
+                        snapshop</li>
+                </ul>
+                <p class="note">Note that an OPV of COPY can be expensive if the subgraph of that child node contains a
+                    lot of descendants.</p>
+            </p>
+        </section>
+        <section>
+            <h3 id="versioned-reference">Referencing a Version</h3>
+            <p>
+                The reference property type holds an identifier to a <a>referenceable node</a>. <a>Version nodes</a>
+                are not referenceable. A reference relationship to a <a>versionable node</a> may specify the intended
+                version by <a>annotating</a> the reference with standard annotation property
+                <code>hmf:versionLabel</code> (see [[[#standard-annotations]]]) with value set as the desired version
+                label.
+            </p>
+        </section>
     </section>
     <section>
-
         <h2 id="repository">Repository</h2>
         <section class="informative">
             <h3>Introduction</h3>
             <p>
-                A <a>repository</a> provides container services to <abbr
-                    title="Hierarchical Metadata Framework">HMF</abbr> metadata.
+                HMF documents represent HMF <a>trees</a> on disk or on the wire. When HMF trees enter a
+                repository they acquire additional behaviour and semantics. This section specifies the
+                repository.
             </p>
+        </section>
+
+        <section>
+            <h3 id="repository-node">Repository Node - <code>hmf:repository</code></h3>
+            <p>
+                The <a>repository node</a> provides metadata about the repository including features it supports
+                and links to other resources within the model.
+            </p>
+            <table class="simple">
+                <thead>
+                    <tr>
+                        <th>Definition Type</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Mandatory Status</th>
+                        <th>Multiple Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Property</td>
+                        <td><code>hmf:namespace</code></td>
+                        <td><code>type:string</code></td>
+                        <td>optional</td>
+                        <td>single</td>
+                        <td>
+                            A reference property pointing to the <code>hmf:namespaceRegistry</code>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Property</td>
+                        <td><code>*</code></td>
+                        <td><code>*</code></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>
+                            Allows for any property to be added to the <a>repository node</a>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Child</td>
+                        <td><code>*</code></td>
+                        <td><code>*</code></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>
+                            Allows for any child to be added to the <a>repository node</a>.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
 
         <section>
@@ -1379,14 +1980,7 @@
         </section>
 
         <section>
-            <h3>Repository Node</h3>
-            <p>
-
-            </p>
-        </section>
-
-        <section>
-            <h3 id="move-copy">Move, Copy and Delete Semantics</h3>
+            <h3 id="move-copy-delete">Move, Copy and Delete Semantics</h3>
             <p>
 
             </p>
@@ -1449,23 +2043,46 @@
                     or single domain metadata storage applications.
                 </p>
             </section>
+        </section>
+        <section>
+            <h3 id="custom-value-types">Custom Value Types</h4>
+                <section>
+                    <h4>Defining Custom Types</h4>
+                    <p></p>
+                </section>
+                <section>
+                    <h4>Custom Value Type Registry</h4>
+                    <p>
+
+                    </p>
+                </section>
+        </section>
+        <section>
+            <h3 id="observation">Observation</h4>
 
         </section>
-        <section class="informative">
-            <h2>Indexing</h2>
-
-        </section>
-        <section class="informative">
-            <h2>Internationalization</h2>
-            <p>Storing internationlized strings... </p>
-        </section>
-        <section class="informative">
-            <h2>Relationship to RDF</h2>
-
-        </section>
-
     </section>
 
+    <section class="informative">
+        <h2>Indexing</h2>
+        <p>
+            Indexing is a core consideration of storage and repository implementations, however it's not
+            considered a part of the HMF core model specification.
+        </p>
+    </section>
+
+    <section class="informative">
+        <h2>Internationalization Considerations</h2>
+        <p>Storing internationlized strings... </p>
+    </section>
+
+    <section class="informative">
+        <h2>Relationship to RDF</h2>
+    </section>
+
+    <section class="appendix informative">
+        <h2>Built-in Type Definitions</h2>
+    </section>
 
 </body>
 
