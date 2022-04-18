@@ -124,8 +124,8 @@
         <p>
             <abbr title="Hierarchical Metadata Framework">HMF</abbr> allows for information to be captured and
             formalized
-            within the model through <a>types</a>. <a>Types</a> categorise, characterise and constrain metadata and
-            so serve as building blocks for robust applications. <a>Types</a> can be applied to metadata at <em>any
+            within the model through <a>types</a>. Types categorise, characterise and constrain metadata and
+            so serve as building blocks for robust applications. Types can be applied to metadata at <em>any
                 point during its lifecycle</em> allowing for raw and unstructured data to be edited and reasoned into
             formalised, semantically rich trees.
         </p>
@@ -2043,24 +2043,7 @@
                     or single domain metadata storage applications.
                 </p>
             </section>
-        </section>
-        <section>
-            <h3 id="custom-value-types">Custom Value Types</h4>
-                <section>
-                    <h4>Defining Custom Types</h4>
-                    <p></p>
-                </section>
-                <section>
-                    <h4>Custom Value Type Registry</h4>
-                    <p>
-
-                    </p>
-                </section>
-        </section>
-        <section>
-            <h3 id="observation">Observation</h4>
-
-        </section>
+        </section>s
     </section>
 
     <section class="informative">
@@ -2077,7 +2060,87 @@
     </section>
 
     <section class="informative">
-        <h2>Relationship to RDF</h2>
+        <h2>Relationship to <abbr title="Resource Description Framework">RDF</abbr></h2>
+        <section>
+            <h3>Introduction</h3>
+            <p>
+                The Resource Description Framework (<abbr title="Resource Description Framework">RDF</abbr>)
+                package of specifications is an attempt to address the general problem of information storage and
+                representation on the web. HMF is an attempt to address the specific problem of metadata tree
+                storage and representation within organizations. Although their goals are different,
+                there are a set of problems germane to metadata representation for which RDF has solutions:
+                <ul>
+                    <li>
+                        Graph representation - RDF provides a general purpose <a
+                            data-cite="rdf11-concepts#data-model">graph-based data model</a>
+                        consisting of facts (formally <a
+                            data-cite="rdf11-concepts#resources-and-statements">statements</a>)
+                        about <em>things</em> (formally <a
+                            data-cite="rdf11-concepts#resources-and-statements">resources</a>)
+                        encoded as triplets. RDF introduces the concept of a <a
+                            data-cite="rdf11-concepts#dfn-named-graph">named graph</a> which is a powerful
+                        building block when working with large metadata datasets. HMF overlays a
+                        <em>tree-based data model</em> atop the RDF general purpose graph-based data model.
+                    </li>
+                    <li>IRIs for everything - RDF uses IRIs as the means for identification of entities (or in RDF;
+                        resources) and types. The use of IRIs
+                    </li>
+                    <li>Compact IRIs and Namespacing - everything in RDF is identified using an IRI which creates the
+                        need for a shorthand alternative to help with readibility. RDF introduces the concepts of a
+                        <a data-cite="rdf11-concepts#namespace">namespace and prefix</a> which are used abbreviate an
+                        IRI especially during serialization.
+                        RDF does not however formally define a namespace within the model, describing them as
+                        <em><a data-cite="rdf11-concepts#namespace">merely a syntactic convenience for abbreviating
+                                IRIs</a></em>. HMF recognises the need for namespaces as <em>extensible name
+                            collections</em> provding named and managed scope.
+                    </li>
+
+                    <li>Reification of information and relationships - </li>
+                    <li>Encoding and internationalization - RDF and supporting specifications and vocabularies
+                        include support string internationalization (using [[[BCP47]]] <a
+                            data-cite="rdf11-concepts#dfn-language-tag">language tags</a>) as well as mechanisms
+                        for encoding a <a data-cite="json-ld11#base-direction">base direction</a> for text.</li>
+                </ul>
+            </p>
+            <p>
+                Each of these points are elaborated over the following sections.
+            </p>
+        </section>
+        <section>
+            <h3>Graph-based data model</h3>
+            <p>
+
+            </p>
+        </section>
+        <section>
+            <h3>RDF Goals</h3>
+            <p>
+                The Resource Description Framework (<abbr title="Resource Description Framework">RDF</abbr>) is a
+                general purpose <a data-cite="rdf11-concepts#data-model">graph-based data model</a> and framework for <a
+                    data-cite="rdf-concepts#section-Introduction">representing information on the web</a>. The RDF
+                model consists of facts (formally <a data-cite="rdf11-concepts#resources-and-statements">statements</a>)
+                about <em>things</em> (formally <a data-cite="rdf11-concepts#resources-and-statements">resources</a>)
+                encoded as triplets.
+            </p>
+        </section>
+        <section>
+            <h3>IRIs As Identifiers</h3>
+            <p>
+
+            </p>
+        </section>
+        <section>
+            <h3>Graph-based data model</h3>
+            <p>
+
+            </p>
+        </section>
+        <section>
+            <h3></h3>
+            <p>
+
+            </p>
+        </section>
     </section>
 
     <section class="appendix informative">
