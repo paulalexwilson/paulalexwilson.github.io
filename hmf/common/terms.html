@@ -51,6 +51,9 @@
     <dd>
         The <em>default namespace</em> is the convenient immutable empty namespace that requires no
         <a>term</a> to be specified in the <a>local name</a>. See [[[#empty-namespace]]].</dd>
+    <dt><dfn data-lt="document|documents" class="preserve">document</dfn></dt>
+    <dd>
+        A <em>document</em> is a <a>tree</a> serialized using one of the HMF <a>vocabularies</a>.</dd>
     <dt><dfn data-lt="domains|domain model|domain models" class="preserve">domain model</dfn></dt>
     <dd>
         The <em>domain</em> is the real-world subject that is being <a>formalized</a> with HMF.</dd>
@@ -66,7 +69,8 @@
     <dd>
         An <a>entity</a> is anything held within the repository that has an <a>identity</a>.
         This can be regular <a>nodes</a> within the <a>working tree</a> but may also
-        refer to objects such as the <a>namespace registry</a> and <a>repository node</a>.</dd>
+        refer to objects such as the <a>namespace registry</a> and <a>repository node</a>.
+        See [[[#entities]]].</dd>
     <dt><dfn data-lt="formalisms|formalise|formalised|formalizms|formalizm|formalize|formalized"
             class="preserve">formalism</dfn></dt>
     <dd>
@@ -100,11 +104,6 @@
         An <em>item definition</em> is either a <a>property definition</a> or <a>
             child node definition</a>.
     </dd>
-    <dt><dfn class="preserve">metadata-defined types</dfn></dt>
-    <dd>
-        Metadata-defined types refers to the concept of holding type information
-        as first class metadata <a>items</a> within the <a>tree</a>. It allows the
-        model formalizations to be stored and managed itself as metadata.</dd>
     <dt><dfn data-lt="mixins|mixin type|mixin types" class="preserve">mixin</dfn></dt>
     <dd>
         A <em>mixin type</em> is a <a>type</a> that can be composed onto a <a>node</a>
@@ -197,16 +196,13 @@
     <dd>
         A <em>property type definition</em> is used to permit and constrain a <a>property</a>
         on a <a>node</a> within a <a>node type definition</a>. See [[[#property-definition]]].</dd>
-    <dt><dfn data-lt="property types" class="preserve">property type</dfn></dt>
-    <dd>
-        See <a>value type</a>.</dd>
     <dt><dfn data-lt="references|strong reference|weak reference|reference property|reference properties|reference relationship|reference relationships|reference type"
             class="preserve">reference</dfn></dt>
     <dd>
         A <a>reference</a> is a type of unidirectional <a>relationship</a>
         between <a>nodes</a>. They can either by <em>strong</em> or <em>weak</em>
         as explained in [[[#references]]].</dd>
-    <dt><dfn data-lt="referenceable|referenceable node" class="preserve">referenceable</dfn></dt>
+    <dt><dfn data-lt="referenceable|referenceable node|referenceable nodes" class="preserve">referenceable</dfn></dt>
     <dd>
         A <a>node</a> is <a>referenceable</a> if it can be the target of a
         <a>reference</a>. Only <a>nodes</a> that are <a>referenceable</a>
@@ -265,7 +261,7 @@
     <dd>
         A <a>term</a> is the short-hand alias of a <a>namespace</a> used in
         compact <a>names</a>.</dd>
-    <dt><dfn data-lt="traverse|traversing" class="preserve">traversal</dfn></dt>
+    <dt><dfn data-lt="traverse|traversing|traversed" class="preserve">traversal</dfn></dt>
     <dd>
         <a>Traversal</a> is the process of <a>navigating</a> from the <a>root node</a>
         and a <a>node</a> using a <a>path</a>. See [[[#traversal]]].</dd>
@@ -327,7 +323,7 @@
         an additional <a>version label</a> allowing clients to resolve that <a>reference</a> to a
         specific <a>version</a>.
     </dd>
-    <dt><dfn data-lt="versionable states|versionable tree|versionable subtree|versioned state"
+    <dt><dfn data-lt="versionable states|versionable tree|versionable subtree|versionable subtrees|versioned state"
             class="preserve">versionable state</dfn>
     </dt>
     <dd>
@@ -335,6 +331,10 @@
         and a subset of its descendent subtree depending on the <a>on-parent-version</a> state of
         its <a>child nodes</a>.
     </dd>
+    <dt><dfn data-lt="vocabularies" class="preserve">vocabulary</dfn></dt>
+    <dd>
+        A <em>vocabulary</em> is a <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-concrete-rdf-syntax">concrete
+            syntax</a> for the representation of HMF <a>trees</a> on disk or on the wire.</dd>
     <dt><dfn data-lt="working trees" class="preserve">working tree</dfn></dt>
     <dd>
         The <em>working tree</em> represents the current head state of the
