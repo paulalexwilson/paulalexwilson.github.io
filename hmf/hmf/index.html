@@ -9,6 +9,7 @@
     Todos:
     * Complete terms list 
     * Formally define the namespace registry?
+    * Remove versioned reference? might be unnecessary given that version is referenceable
 -->
 
 <head>
@@ -387,6 +388,9 @@
                     <dt> namespace registry</dt>
                     <dd> The <a>namespace registry</a> is guaranteed to be available with a fixed identity as provided
                         by the <a>repository node</a></dd>
+                    <dt> version histories</dt>
+                    <dd> <a>Version histories</a> are themselves <a>referenceable</a> and can be referenced in the same
+                        way as <a>referenceable nodes</a></dd>
                     <dt> versions</dt>
                     <dd> <a>Versions</a> are themselves <a>referenceable</a> and can be referenced in the same way as
                         <a>referenceable nodes</a></dd>
@@ -951,10 +955,14 @@
                 <section>
                     <h4 id="versioned-references">Versioned References</h4>
                     <p>
-                        Versioned references allow a property to hold a reference to a specific version of a node,
-                        guaranteeing that the reference resolves to an immutable and known node state. This is a
-                        key building block for systems where a <em>stable</em> or <em>promoted</em> version of a
-                        a <a>node</a> must be referenced whilst simultaneously edited.
+                        <a>Versioned references</a> allow a <a>property</a> to hold a reference to a specific version
+                        <em>label</em> of a <a>node</a>, guaranteeing that the reference resolves to an immutable and
+                        known node state. This is a key building block for systems where a <em>stable</em> or
+                        <em>promoted</em> version of a <a>node</a> must be referenced whilst simultaneously edited,
+                        and versions are maintained using their label.
+                    </p>
+                    <p class="note">
+                        It is possible to hold a direct reference to a <a>version</a>.
                     </p>
                     <p>
                         <div class="illustration">
@@ -1187,21 +1195,44 @@
             <section>
                 <h4 id="node-type-inheritance">Node Type Inheritance</h4>
                 <p>
-                    Both primary types and mixin types can take advantage of inheritance which allows a node type
-                    to inherit from a supertype or parent node type definition. Subtypes inherit the parent
-                    property and child node type definitions, including any such definitions themselves inherited
-                    from the parent&quot;s supertype. The resulting definition known as the <a>effective node type</a>
-                    is the sum of all inherited type definitions.
+                    Both <a>primary types</a> and <a>mixin types</a> can take advantage of inheritance which allows a
+                    <a>node type</a> to inherit from a <a>supertype</a> or parent <a>node type definition</a>.
+                    Subtypes inherit the parent property and child node type definitions, including any such definitions
+                    themselves inherited from the parent&quot;s supertype. The resulting definition known as the
+                    <a>effective node type</a> is the sum of all inherited type definitions.
                 </p>
-                <p class="ednote" title="Define override rules">
-                    Expand by defining the inheritance rules when a subtype redefines a property name already
-                    defined on the parent.
+                <p>
+                    When a <a>node type</a> <code>T<sub>sub</sub></code> in inherits from a <a>supertype</a>
+                    <code>T<sub>super</sub></code> it recieves the <a>item definitions</a> from
+                    <code>T<sub>super</sub></code>. In the majority of cases those <a>item definitions</a> are
+                    <em>added</em> to those already defined on <code>T<sub>sub</sub></code>. If a given
+                    definition <code>D<sub>sub</sub></code> has the same <a>name</a> and classification (i.e.
+                    node or property type definition) as a definition <code>D<sub>super</sub></code> on
+                    <code>T<sub>super</sub></code> then <code>D<sub>sub</sub></code> overrides
+                    <code>D<sub>super</sub></code>. <a>Residual definitions</a> are always added.
                 </p>
+
             </section>
             <section>
                 <h4 id="multiple-inheritance">Multiple Inheritance</h4>
                 <p>
-
+                    HMF allows for a <a>node type</a> to be defined with multiple <a>supertypes</a> irrespective of
+                    whether those <a>supertypes</a> are <a>primary types</a> or <a>mixin types</a>. When a
+                    <a>node type</a> is declared it may therefore specify a set of <a>supertypes</a>.
+                </p>
+                <p>
+                    If a given subtype <a>node type definition</a> <code>T<sub>sub</sub></code> inherits from
+                    a given supertype <a>node type definition</a> <code>T<sub>super</sub></code> then:
+                    <ul>
+                        <li>
+                            If <code>T<sub>super</sub></code> is a <a>mixin type</a> then <code>T<sub>sub</sub></code>
+                            may be a <a>mixin type</a> or <a>primary type</a>.
+                        </li>
+                        <li>
+                            If <code>T<sub>super</sub></code> is a <a>primary type</a> then <code>T<sub>sub</sub></code>
+                            must also be a <a>primary type</a>.
+                        </li>
+                    </ul>
                 </p>
             </section>
             <section>
@@ -1211,16 +1242,6 @@
                     of HMF since it allows for progressive typing during the lifecycle of a metadata <a>tree</a>.
                     The primary type of a node may only be changed if all mandatory <a>items</a> are already present
                     on that node.
-                </p>
-            </section>
-            <section>
-                <h4>Node Type Versioning</h4>
-                <p>
-                    Node types can be optionally versioned. Modifications to the node type will result in a version
-                    increment.
-                </p>
-                <p class="ednote" title="Needs expanding">
-                    Needs expanding
                 </p>
             </section>
         </section>
@@ -1641,15 +1662,31 @@
                     [[[#on-parent-version]]].
                 </p>
             </section>
-
         </section>
         <section>
             <h3 id="effective-node-type">Effective Node Type</h3>
-            <p></p>
+            <p>
+                The <a>effective node type</a> of <a>node</a> </a><code>N</code>is the resulting <a>type</a> once all
+                <a>item definitions</a> from all <a>supertypes</a> have been inherited and applied subject to the
+                inheritance rules. It is therefore the sum of all <a>item definitions</a>:
+                <ul>
+                    <li>declared in the <a>primary type</a> of <code>N</code></li>
+                    <li>inherited by the <a>primary type</a> of <code>N</code></li>
+                    <li>declared in the <a>mixin types</a> of <code>N</code></li>
+                    <li>inherited by the <a>mixin types</a> of <code>N</code></li>
+                </ul>
+            </p>
         </section>
         <section>
             <h3 id="residual-definition">Residual Definitions</h3>
-            <p></p>
+            <p>
+                A <a>residual definition</a> is an unnamed <a>item definition</a> that applies to all other <a>items</a>
+                that are not otherwise scoped and defined by any of the other <a>item definition</a> present on the
+                <a>effective type</a> of a <a>node</a>.
+            </p>
+            <p>
+                Residual definitions are marked by having the wildcard <a>name</a> (<code>*</code>).
+            </p>
         </section>
         <section>
             <h3>Builtin Types</h3>
@@ -1864,11 +1901,29 @@
         <section>
             <h3 id="version-history">Version History</h3>
             <p>
+                The <a>version history</a> is a <a>node</a> that holds child relationships to a set of zero or
+                more <a>version</a> nodes which themselves represent a single version of a <a>versionable node</a>.
+                It has the type <code>hmf:versionHistory</code> and is referenced by a <a>versionable node</a> via the
+                reference property <code>hmf:versionHistory</code>.
             </p>
+            <div class="illustration">
+                <p><img src="version-history-node.png" alt="Version History node" width="800" /></p>
+                <p class="caption">
+                    Illustrates the <a>version history</a> as referred to via the <code>hmf:versionHistory</code>
+                    property found on <code>hmf:versionable</code>.
+                </p>
         </section>
         <section>
             <h3 id="frozen-node">Frozen Node</h3>
             <p>
+                The <a>frozen node</a> is the static snapshot state of a checked-in <a>versionable</a>. It also
+                holds copies of the core metadata in the properties <code>hmf:frozenPrimaryType</code>,
+                <code>hmf:frozenMixinTypes</code> and <code>hmf:frozenUuid</code> (as not to collide
+                with the properties already held on <code>hmf:frozenNode</code>).
+            </p>
+            <p>
+                The <a>child nodes</a> of a <a>frozen node</a> represent the <a>versionable state</a> of a
+                checked-in <a>versionable</a>.
             </p>
         </section>
 
@@ -2279,8 +2334,11 @@
     <section class="appendix informative">
         <h2>Built-in Type Definitions</h2>
         <section>
-            <h3>Base Type - <code>hmf:base</code></h3>
-            <p></p>
+            <h3 id="type-def-base-type">Base Type - <code>hmf:base</code></h3>
+            <p>
+                The <a>base type</a> is the <a>node type</a> of all <a>nodes</a> and is the only <a>node type</a>
+                not to have a <a>supertype</a>.
+            </p>
         </section>
         <section>
             <h3>System Type - <code>hmf:system</code></h3>
