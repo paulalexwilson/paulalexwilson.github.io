@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>HMF Language Server Protocol - v1.0</title>
+    <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
+    <script src="../common/common.js" class="remove" defer></script>
+    <script class="remove">
+        // All config options at https://respec.org/docs/
+        var respecConfig = {
+            localBiblio: {
+                "hmf-core-model": {
+                    "title": "Hierarchical Metadata Framework - Core Model",
+                    "authors": [
+                        "Paul A. Wilson",
+                        "Dave J. Clark"
+                    ],
+                    "publisher": "HMF",
+                    "status": "Draft",
+                    "href": "https://paulalexwilson.github.io/hmf/hmf",
+                    "editors": ["Paul A. Wilson", "Dave J. Clark"],
+                    "date": "2022-11-01"
+                },
+            },
+            shortName: "HMF Language Server Protocol - v1.0",
+            specStatus: "base",
+            noRecTrack: true,
+            authors: [{
+                name: "Paul A. Wilson",
+            }],
+            editors: [{
+                name: "Paul A. Wilson"
+            }],
+            xref: "web-platform",
+            latestVersion: null,
+            subtitle: "A Language Server Protocol for the editing of Hierarchical Metadata",
+        };
+    </script>
+    <style src="../common/style.css" type="text/css"></style>
+    <style type="text/css">
+        code {
+            color:#c63501
+        }
+        .illustration {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <p class="copyright">Copyright...</p>
+    <section id="abstract">
+        <p>
+            <abbr title="Hierarchical Metadata Framework">HMF</abbr>-<abbr title="Language Server Protocol">LSP</abbr> 
+            is a <a href="https://microsoft.github.io/language-server-protocol/">Language Server Protocol (LSP)</a> 
+            describing how a client and server can collaborate over the editing of [[[hmf-core-model]]] 
+            <a data-cite="hmf-core-model#dfn-resources">resources</a>. The protocol covers how clients and servers 
+            communicate with themselves and on the wire.
+        </p>
+    </section>
+    <section id="sotd" class="override">
+        <h2>Status of this Document</h2>
+        <p>This document is in Draft state.</p>
+
+    </section>
+    <section id="audience" class="override introductory">
+        <h2>Intended Audience</h2>
+        <p>Low-level technical documentation for internal developers, architects and external integrators 
+            wishing to understand protocol-level interactions between client and server during resource editing.
+        </p>
+
+    </section>
+    <section class="normative">
+        <h2>Terminology & Conventions</h2>
+        <section>
+            <h3>Terminology</h3>
+            <dl class="termlist" data-sort>
+                <dt><dfn data-lt="action" class="preserve">action</dfn></dt>
+                <dd>
+                    <a>Actions</a> are the base inter-communication primitive used to signal instructions
+                    within HMF-LSP. <a>Actions</a> are <a>dispatched</a> by the sender and <a>handled</a>
+                    by the receiver. <a>Actions</a> do not have a defined sender or receiver, however they 
+                    typically favour a given sender (e.g. the HMF-LSP client). Some <a>actions</a> can be 
+                    exchanged within a single component (e.g. client to client), however the majority are 
+                    exchanged client to server or vice versa. <a>Operations</a> are <a>actions</a> that 
+                    change the model state. 
+                </dd>
+                <dt><dfn data-lt="application identifier" class="preserve">application identifier</dfn></dt>
+                <dd>
+                    The <a>application identifier</a> uniquely identifies a client instance (such as a browser tab).
+                    Within the scope of the <a>application identifier</a> a client typically has multiple 
+                    client sessions, one for each editor pane active within the editor. A <a>session</a> should 
+                    not be <code>Initialize</code>d multiple times from the same client instance. 
+                    </dd>
+                <dt><dfn data-lt="client session identifier" class="preserve">client session identifier</dfn></dt>
+                <dd>
+                    The <a>client session identifier</a> identifies an editorial session such as a single 
+                    editor pane within the editor operating over a <a>node</a> or set of <a>nodes</a>.
+                    The <a>client session identifier</a> also enables <a>messages</a> to be routed to the 
+                    correct destination.
+                </dd>
+                <dt><dfn data-lt="dispatch" class="preserve">dispatch</dfn></dt>
+                <dd>
+                    <a>Dispatch</a> is the act of supplying an <a>action</a> for delivery or broadcast 
+                    within or between HMF-LSP participants. 
+                </dd>
+                <dt><dfn data-lt="dirty" class="preserve">dirty</dfn></dt>
+                <dd>
+                    The <a>model state</a> is <a>dirty</a> if it is not synchronised with the <a>persisted
+                    model</a> or no <a>persisted model</a> yet exists. This may happen if another editor modifies 
+                    the <a>persisted state</a> or if a new node is created that is not valid and so cannot 
+                    be persisted.
+                </dd>
+                <dt><dfn data-lt="editorial domain" class="preserve">editorial domain</dfn></dt>
+                <dd>
+                    An <a>editorial domain</a> is a collection of HMF resources that an 
+                    editor is currently editing. It is a notional subgraph of resources 
+                    held within the HMF content tree or some other component of HMF such 
+                    as a node type or collection of namespaces.</dd>
+                <dt><dfn data-lt="editor model" class="preserve">editorial model</dfn></dt>
+                <dd>
+                    The <a>editor model</a> refers to the data structure shared between the client and server.
+                    It consists of <a>elements</a> which have a <code>string</code> label indicating the 
+                    <a>element type</a>.</dd>
+                <dt><dfn data-lt="editor type" class="preserve">editor type</dfn></dt>
+                <dd>
+                    The <a>editor type</a> is used to indicate to the server what set of state management 
+                    action handling behaviour should be enabled for the client session. It is through the 
+                    <a>editor type</a> that allows the server to host multiple client session types with 
+                    distinct action handler implementations active across each. For example an <a>editor type</a>
+                    of <code>node</code> (i.e. node editor) may enable different server-side behaviour to an 
+                    <a>editor type</a> of <code>version</code> (version editor) or <code>nodeType</code> 
+                    (node type editor).</dd>
+                <dt><dfn data-lt="element" class="preserve">element</dfn></dt>
+                <dd>
+                    The term <a>element</a> is the most encompassing term for any entity within an HMF tree. 
+                    <a>Nodes</a>, <a>node stats</a>, <a>properties</a>, <a>namespaces</a> and so on are all 
+                    specializations of <a>elements</a>.</dd>
+                <dt><dfn data-lt="model state" class="preserve">model state</dfn></dt>
+                <dd>
+                    The <a>model state</a> represents a snapshot of the <a>editorial domain</a> that is under 
+                    edit within a given HMF-LSP session. Clients dispatch modifications to the server-held 
+                    <a>model state</a> which triggers the <a>model state</a> to be updated and dispatched to 
+                    the client for rendering. 
+                <dt><dfn data-lt="message" class="preserve">message</dfn></dt>
+                <dd>
+                    A <a>message</a> refers to an <a>action</a> envelope containing additional metadata 
+                    such as a <a>client session identifier</a> to allow it to be routed to the correct destination.</dd>
+                <dt><dfn data-lt="participant" class="preserve">participant</dfn></dt>
+                <dd>A <a>participant</a> is either the client or the server.</dd>
+                    <dt><dfn data-lt="operation" class="preserve">operation</dfn></dt>
+                <dd>
+                    An <a>operation</a> is an <a>action</a> that modifies the <a>model state</a>. <a>Operations</a>
+                    can be <em>undone</em> and <em>redone</em>. </dd>
+                <dt><dfn data-lt="resource" class="preserve">resource</dfn></dt>
+                <dd>
+                    <a>Resource</a> is the most general term for entities within the repository. See <a data-cite="hmf-core-model#dfn-resources">resources</a>
+                for more information.</dd>
+                <dt><dfn data-lt="session" class="preserve">session</dfn></dt>
+                <dd>
+                    A <a>session</a> is...</dd>
+            </dl>
+        </section>
+    </section>
+
+    <section>
+        <h2>Introduction</h2>
+        <p>
+            HMF-LSP defines the client-server protocol for long running editorial sessions over an HMF <a>resource</a> 
+            or HMF <a>resource</a> set. It is heavily inspired by Microsoft's <a href="https://microsoft.github.io/language-server-protocol/">
+                Language Server Protocol</a>, however where that specification defines actions for the editing 
+                of text documents, this specification defines <a>actions</a> for the editing of <a>element</a> trees. 
+        </p>
+        <p>
+            The <em>subject</em> of HMF-LSP is an <a>element</a> tree which forms part of the <a>model state</a>. 
+            The term <a>element</a> encompasses HMF <a>resources</a> (the most general type in the HMF specifcation)
+            and any other protocol-specific data types or representations.
+        </p>
+        <p>
+            The protocol is <em><a>session</a> oriented</em> with the <a>model state</a> forming the root of the 
+            session state tree. Clients open a <a>session</a> with the server, the server creates the <a>model state</a> 
+            and the client sends <a>actions</a> to the server as required by the user-driven interactions. The server 
+            performs its work and sends asynchronous actions back to the client to drive UI updates. The server may 
+            send impromptu messages to the client such as if the persisted <a>model state</a> is externally modified,
+            requiring the UI to be updated.   
+        </p>
+        <section>
+            <h3>General Usecases</h3>
+            <p>
+                HMF-LSP <a>actions</a> are the primitives that are used to construct a variety of editorial usecases:
+                <dl>
+                    <dt>Load, Save &amp; Revert</dt>
+                    <dd>The user wishes to begin editing an HMF <a>resource</a> and so the server loads it from persisted 
+                        state and creates and editorial session for the client. An explicit save may be performed after 
+                        editing or if the user completes some <em>atomic</em> updated which may trigger an auto-save. If 
+                        the user wishes to disregard their changes they may choose to revert.
+                    </dd>
+                
+                    <dt>Dirtiness</dt>
+                    <dd>Server-initiated notification to inform the client that the persisted state of a model has 
+                        been changed outside of the current session and so the current <a>session</a> <a>model state</a>
+                        has become stale. The client may prompt the user reload or merge their updates onto the new 
+                        persisted state.
+                    </dd>
+                
+                    <dt>Edit Validation</dt>
+                    <dd>During the modification of an HMF <a>resource</a> the client may request <em>edit validations</em>
+                        from the server to understand if the client-changes are valid with respect to the HMF and model type 
+                        constraints active for the <a>edit subject</a>. Such edit validation requests can happen rapidly 
+                        between user-input pauses or when the UI focus moves away from an input.</dd>
+                
+                    <dt>Editing</dt>
+                    <dd>
+                        The client wishes to modify the <a>model state</a> and so sends an action to add, modify or remove 
+                        a <a>property</a> or some aspect of a <a>node</a> or <a>type</a> to the server. The server makes the 
+                        changes and attempts to write them to the <a>persisted state</a>. If the persist fails the server 
+                        returns a validation error, otherwise it returns the newly persisted <a>model state</a>.
+                    </dd>
+                
+                    <dt>Resource Creation</dt>
+                    <dd>
+                        The user may wish to add a child resource to an existing resource. The server creates the child 
+                        and then issues a navigation action to cause the UI to open a tab to edit the new child. In some 
+                        cases the creation of a new child might trigger several other child nodes to be <em>autocreated</em>
+                        which the server will notify the user of. 
+                    </dd>
+                
+                    <dt>Context Actions</dt>
+                    <dd>
+                        The client may request a set of <em>context actions</em> for a given UI interaction. For example, 
+                        if the user <em>right-clicks</em> on a <a>property</a>, the server decides which labels and 
+                        actions are available from the context menu. Some <a>properties</a> may be deleted for example, whereas 
+                        others may not. Some <a>properties</a> may be refactored into other namespaces and some not. In each 
+                        case, the server holds the set of available context actions for each such UI interaction.
+                    </dd>
+                
+                    <dt>Completion Proposal</dt>
+                    <dd>
+                        In many cases the platform can assist the user during field input. This might be to provide a set of 
+                        available <a>property</a> or child item names for a given <a>node</a> type, or the set of <a>traits</a>
+                        that can be applied to a given <a>resource</a>. In such cases the server can send a action to provide 
+                        <em>completion proposals</em> during editing.
+                    </dd>
+                
+                    <dt>Selection</dt>
+                    <dd>
+                        Typically UI applications handle selection logic within the client however there are some circumstances 
+                        where it is useful to have the server trigger a selection in the client. As such selection actions are 
+                        triggered and handled internally however the server may advertise that it wishes to receive selection 
+                        updates during initialization.
+                    </dd>
+                
+                    <dt>Hover</dt>
+                    <dd>
+                        When a user hovers over an item the resulting overlay is driven by the server. This is because the server 
+                        may wish to have the client display a rich pop-up containing detailed information about the element or 
+                        event follow HMF reference to other resources such that it can display a preview window.
+                    </dd>
+                    
+                    <dt>Undo &amp; Redo</dt>
+                    <dd>
+                        The server maintains a <a>command stack</a> that allows for previous <a>model state</a> revisions to be 
+                        undone and redone.  
+                    </dd>
+                    
+                    <dt>External Navigation</dt>
+                    <dd>
+                        External navigation allows the server to instruct the client to navigate to some external target such as 
+                        another <a>resource</a>. This may be because the server has created a child <a>resource</a> and wishes 
+                        to open an editor widget for that resource, or because the user has clicked on a reference to another 
+                        <a>resource</a> and wishes to open an editor for it.
+                    </dd>
+                    
+                    <dt>Status &amp; Messages</dt>
+                    <dd>
+                        There are to <em>notification</em> actions that can be sent from the client to the server; status and 
+                        message. Status updates are non-actionable and informational, whereas messages may contain buttons to 
+                        trigger further actions or may be used to display a progress bar.
+                    </dd>   
+                </dl>
+            </p>
+        </section>
+        <section>
+            <h3>Message Exchange</h3>
+            <p>
+                The protocol defines two protocol participants:
+                <dl>
+                    <dt>Client</dt>
+                    <dd>
+                        Reposible for user interface and <a>>model state</a> rendering, as well as responding to user interaction 
+                        with message <a>actions</a>.
+                    </dd>
+                    <dt>Server</dt>
+                    <dd>
+                        The custodian of the <a>model state</a>, respondible for loading it from <a>persisted state</a>, saving 
+                        it back to <a>persisted state</a>, validating changes to it and driving general editorial workflows. 
+                        All editorial logic is implemented within the server side component of the HMF language server protocol.
+                    </dd>
+                </dl>
+                Messages can be exchanged <em>within</em> the client or server internally or dispatched across the protocol 
+                bridge from client to server or vice versa. Typically a given <a>action</a> is sent between client and server 
+                however there may be exceptions.
+                
+            </p>
+            <p class="note">
+                It bears repeating that there is no limit or restriction on how each message is cast within HMF-LSP participants. 
+                A message could be externally delievered from client to server or vice versa or delivered internally or both. 
+            </p>
+        </section>
+    </section>
+
+    <section>
+        <h2>Client-Server Lifecycle</h2>
+        <p>
+            The HMF-LSP is a <em>session-oriented</em> protocol whereby a <a>session</a> must be
+            first established before meaningful communication can begin. A <a>session</a> is parameterized
+            by a unique <a>client identifier</a> and an <a>editor type</a>. The <a>client identifier</a>
+            allows messages sharing a common transport layer connection to be routed to the correct
+            client or session instance. The <a>editor type</a> defines the allowed set of actions that
+            can be exchanged between the client and server. 
+        </p>
+        <section>
+            <h3>Initialize Request</h3>
+            <p>
+                The <code>initialize</code> request is the first <a>message</a> sent by the <a>client</a> 
+                to the <a>server</a>. Until the server has responded with an <code>InitializeResult</code> no other request or 
+                notification can be handled and is expected to throw an error. A client is uniquely identified 
+                by an <a><code>applicationId</code></a> and has to specify on which <code>protocolVersion</code> 
+                it is based on. In addition, custom arguments can be provided in the <code>args</code> map to allow 
+                for custom initialization behavior on the server. The request returns an <code>InitializeResult</code> 
+                that encapsulates server information and capabilities. The <code>InitializeResult</code> is 
+                used inform the client about the action kinds that the server can handle for a specific 
+                <code>editorType</code>.
+            </p>
+            <p>
+                The purpose of this initialize interaction is to allow the client and server to be generally introduced. It's
+                the opportunity for either party to determine if there's a protocol mismatch or if the capabilities of the 
+                server are insufficient for the needs of the client.
+            </p>
+        </section>
+        <section>
+            <h3>InitializeClientSession Request</h3>
+            <p>
+                The <code>initialize</code> request is the first <a>message</a> sent by the <a>client</a> 
+                to the <a>server</a>. Until the server has responded with an <code>InitializeResult</code> no other request or 
+                notification can be handled and is expected to throw an error. A client is uniquely identified 
+                by an <code>applicationId</code> and has to specify on which <code>protocolVersion</code> 
+                it is based on. In addition, custom arguments can be provided in the <code>args</code> map to allow 
+                for custom initialization behavior on the server. The request returns an <code>InitializeResult</code> 
+                that encapsulates server information and capabilities. The <code>InitializeResult</code> is 
+                used inform the client about the action kinds that the server can handle for a specific 
+                <code>editorType</code>.
+            </p>
+        </section>
+        <section>
+            <h3>DisposeClientSession Request</h3>
+            <p>
+                Sent by the client to the server to indicate that the <a>client session</a> and associated <a>model state</a> 
+                is no longer needed. For example, if the user closes the editor widget tab then this <a>message</a> should be 
+                sent. There is <em>no expectation</em> that the server side will attempt to persist the <a>model state</a> if it is 
+                <a>dirty</a>.
+            </p>
+        </section>
+    </section>
+
+
+    <section>
+        <h2>Base Protocol</h2>
+        <p>
+            The base protocol defines the structure of messages exchanged within or between client and server.
+        </p>
+        <section>
+            <h3>Action Message</h3>
+            <p>
+                A general message serves as an envelope carrying an <a>action</a> to be transmitted within 
+                HMF-LSP participants. The <code>clientId</code> is used to route action message to the appropriate 
+                destination.
+            </p>
+            <table class="simple" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Input</th>
+                        <th>Type</th>
+                        <th>Mandatory Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>clientId</code></td>
+                        <td><code>String</code></td>
+                        <td>Required</td>
+                        <td>The pre-established identifier for the client session.</td>
+                    </tr>
+                    <tr>
+                        <td><code>action</code></td>
+                        <td><code><a href="#action">Action</a></code></td>
+                        <td>Required</td>
+                        <td>The <a>action</a> to execute.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h3>Action</h3>
+            <p>
+                An action is a declarative description of a behavior that shall be invoked by the receiver upon 
+                receipt of the action. It is a plain data structure, and as such transferable between server and 
+                client. Actions contained in action messages are identified by their kind attribute. This 
+                attribute is required for all actions. Certain actions are meant to be sent from the client to 
+                the server or vice versa, while other actions can be sent both ways, by the client or the server. 
+                All actions must extend the default action interface.
+            </p>
+            <table class="simple" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Input</th>
+                        <th>Type</th>
+                        <th>Mandatory Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>kind</code></td>
+                        <td><code>String</code></td>
+                        <td>Required</td>
+                        <td>Unique identifier specifying the kind of action to process.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </section>
+
+    <section>
+        <h2>Model Elements</h2>
+        <p>
+            The <a>editor model</a> is a fine-grained tree of <a>elements</a> representing an HMF resource set 
+            along with other representation-specific elements. The base type of all model elements is 
+            <code>EditorModelElement</code>. Each element has a type as indicated by the <code>type</code> 
+            field which can be used to select a deserialization strategy.
+        </p>
+    </section>
+       
+    <section>
+        <h2>Actions</h2>
+        <p>
+            <section>
+                <h3>Model Access &amp; Creation</h3>
+                <section>
+                    <h4>RequestModelAction</h4>
+                    <dl class="advisement">
+                        <dt>kind</dt>
+                        <dd><code>requestModel</code></dd>
+                        <dt>typical interactions</dt>
+                        <dd>Client ⇨ Server</dd>
+                        <dt>usecases</dt>
+                        <dd>Loading <a>model state</a> after client initialization</dd>
+                    </dl>
+                    <p>
+                        Sent from the client to the server to request a model. Usually this is the first message 
+                        sent to the server after a client session is established when a user opens a file. If 
+                        the resource is not available on the server then a <code>ServerMessageAction</code> will
+                        be returned with severity <code>ERROR</code> indicating the reason why the resource at the 
+                        given path could not be loaded. If the resource is available, the server should provide its 
+                        model via <code>SetModelAction</code>.
+                    </p>
+                    <table title="requestModel Parameters" class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>sourcePath</code></td>
+                                <td>Required</td>
+                                <td>The <em>Path</em> identifying the requested model. See the HMF Core Model 
+                                    Specification for the set of available Path syntaxes.</td>
+                            </tr>
+                            <tr>
+                                <td><code>options</code></td>
+                                <td>Required</td>
+                                <td>A <code>string</code> to <code>string</code> mapping of additional arguments 
+                                    to consider when retrieving or building the model. Currently no additional 
+                                    arguments are supported.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>SetModelAction</h4>
+                    <dl class="advisement">
+                        <dt>kind</dt>
+                        <dd><code>setModel</code></dd>
+                        <dt>typical interactions</dt>
+                        <dd>Server ⇨ Client</dd>
+                        <dt>usecases</dt>
+                        <dd>Updating the client with the latest <a>model state</a></dd>
+                    </dl>
+                    <p>
+                        
+                    </p>
+                    <table title="setModel Parameters" class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>sourcePath</code></td>
+                                <td>Required</td>
+                                <td>The <em>Path</em> identifying the requested model. See the HMF Core Model 
+                                    Specification for the set of available Path syntaxes.</td>
+                            </tr>
+                            <tr>
+                                <td><code>options</code></td>
+                                <td>Required</td>
+                                <td>A <code>string</code> to <code>string</code> mapping of additional arguments 
+                                    to consider when retrieving or building the model. Currently no additional 
+                                    arguments are supported.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                
+                <section>
+                    <h4>CreateChildOperation</h4>
+                    <dl class="advisement">
+                        <dt>kind</dt>
+                        <dd><code>createChild</code></dd>
+                        <dt>typical interactions</dt>
+                        <dd>Client ⇨ Server</dd>
+                        <dt>usecases</dt>
+                        <dd>The user wishes to create a new child <a>resource</a> of the current resource</dd>
+                    </dl>
+                    <p>
+                        Sent from the client to the server to signal the intention to create a new node beneath the 
+                        current session's root node. The server may or may not persist the node during the handling 
+                        of this request (for example if the child <a>node type</a> has mandatory fields that are not 
+                        automatically created) however it is expected that a new editor session will be established to 
+                        edit the new child node via the <code>NavigateToTargetAction</code>.
+                    </p>
+                    <table title="createChild Parameters" class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>name</code></td>
+                                <td>Required</td>
+                                <td>The HMF <code>name</code> of the node expressed in either its compact or expanded form.</td>
+                            </tr>
+                            <tr>
+                                <td><code>primaryType</code></td>
+                                <td>Optional</td>
+                                <td>The <code>primaryType</code> <a>name</a> of the node expressed in either its compact or expanded form.
+                                If this value is omitted the <code>primaryType</code> will become the <a>default primary type</a> as defined 
+                                in the relevant <a>child node definition</a> of the parent node's type definition.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>  
+                <section>
+                    <h4>CreatePropertyOperation</h4>
+                    <dl class="advisement">
+                        <dt>kind</dt>
+                        <dd><code>createProperty</code></dd>
+                        <dt>typical interactions</dt>
+                        <dd>Client ⇨ Server</dd>
+                        <dt>usecases</dt>
+                        <dd>The user wishes to create a new <a>property</a> of the current resource</dd>
+                    </dl>
+                    <p>
+                        Sent from the client to the server to signal the intention to create a new property beneath the 
+                        current session's root node. The server should persist the property on the node if valid.
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Type</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>name</code></td>
+                                <td><code>string</code></td>
+                                <td>Required</td>
+                                <td>The HMF <code>name</code> of the property expressed in either its compact or expanded form.</td>
+                            </tr>
+                            <tr>
+                                <td><code>type</code></td>
+                                <td><code>string</code></td>
+                                <td>Required</td>
+                                <td>The HMF <code>type</code> of the property expressed in either its compact or expanded form.</td>
+                            </tr>
+                            <tr>
+                                <td><code>values</code></td>
+                                <td>Required</td>
+                                <td><code>string[] | integer[] | boolean[]</code></td>
+                                <td>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>  
+            </section>
+            <section>
+                <h3>Editing Actions</h3>
+                <section>
+                    <h4>PropertyEdit</h4>
+                    <p>
+                        A <em>type</em> used to represent a the desired state of a <a>property</a>.
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Type</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>editType</code></td>
+                                <td><code><a href="#propertyedittype">PropertyEditType</a></code></td>
+                                <td>Required</td>
+                                <td>The type of edit to apply.</td>
+                            </tr>
+                            <tr>
+                                <td><code>values</code></td>
+                                <td><code>string</code></td>
+                                <td>Optional</td>
+                                <td>The value to apply during the edit.</td>
+                            </tr>
+                            <tr>
+                                <td><code>valueIndex</code></td>
+                                <td><code>string</code></td>
+                                <td>Optional</td>
+                                <td>The index to apply the edit to (in the case of multi-value properties).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section>
+                    <h4>PropertyEditType</h4>
+                    <p>
+                        An enumeration describing the edit type. 
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>UPDATE</code></td>
+                                <td>Update the property with a new name, value or type.</td>
+                            </tr>
+                            <tr>
+                                <td><code>DELETE</code></td>
+                                <td>Delete the entire property.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section>
+                    <h4>ApplyPropertyEditOperation</h4>
+                    <dl class="advisement" title="foo">
+                        <dt>kind</dt>
+                        <dd><code>applyPropertyEdit</code></dd>
+                        <dt>typical interactions</dt>
+                        <dd>Client ⇨ Server</dd>
+                        <dt>usecases</dt>
+                        <dd>The user wishes to apply a modification to a <a>property</a> within the <a>model state</a></dd>
+                    </dl>
+                    <p>
+                        Used to apply a modification to property within current model. 
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Type</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>propertyPath</code></td>
+                                <td>String</td>
+                                <td>Required</td>
+                                <td>The property <a>name</a> or <a>path</a> to be edited.</td>
+                            </tr>
+                            <tr>
+                                <td><code>updates</code></td>
+                                <td><code><a href="#propertyedit">PropertyEdit[]</a></code></td>
+                                <td>Required</td>
+                                <td>An ordered collection of <code>PropertyUpdate</code> objects containing 
+                                    the updates to apply in order.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>RequestPropertyEditValidationAction</h4>
+                    <p>
+                        Sent from the client to the server to request validation of the given <a>property</a>. The action supplies 
+                        the proposed property value and/or type <code>PropertyEdit</code>s which server will then 
+                        validate against the current model state. The server should respond with a <code>SetEditValidationResultAction</code>
+                        indicating the result of the edit validation action. The client should first validate an edit list before attempting 
+                        to apply the edit via <code>ApplyPropertyEditOperation</code>.
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Type</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>propertyPath</code></td>
+                                <td><code>String</code></td>
+                                <td>Required</td>
+                                <td>The property <a>name</a> or <a>path</a> to be validated.</td>
+                            </tr>
+                            <tr>
+                                <td><code>updates</code></td>
+                                <td><code><a href="#propertyedit">PropertyEdit</a></code></td>
+                                <td>Required</td>
+                                <td>An ordered collection of <code>PropertyUpdate</code> objects containing 
+                                    the potential updates to validate in order.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>NodeEdit</h4>
+                    <p>
+                        A <em>type</em> used to represent a change to be applied to a <a>node</a>.
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Type</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>editType</code></td>
+                                <td><code><a href="#nodeedittype">NodeEditType</a></code></td>
+                                <td>Required</td>
+                                <td>The type of edit to apply.</td>
+                            </tr>
+                            <tr>
+                                <td><code>value</code></td>
+                                <td><code>string</code></td>
+                                <td>Optional</td>
+                                <td>The value to apply during the edit.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>NodeEditType</h4>
+                    <p>
+                        An enumeration describing the edit type. 
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>RENAME</code></td>
+                                <td>Rename the node including changing the node's namespace.</td>
+                            </tr>
+                            <tr>
+                                <td><code>RETYPE</code></td>
+                                <td>Change the type of the node, e.g. change <code>type:file</code> to <code>type:folder</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>DELETE</code></td>
+                                <td>Delete the entire node and its children.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+            </section>
+            <section>
+                <h3>Completion Requests</h3>
+                <p>
+                    Completion requests are sent from the client to the server to compute completion items at a given input.
+                </p>
+                <section>
+                    <h4>CompleteNodeTypeProposalsAction</h4>
+                    <p>
+
+                    </p>
+                </section>
+                <section>
+                    <h4>CompleteNodeNameProposalsAction</h4>
+                    <p>
+
+                    </p>
+                </section>
+                <section>
+                    <h4>CompleteNodeChildNameProposalsAction</h4>
+                    <p>
+
+                    </p>
+                </section>
+                <section>
+                    <h4>CompletePropertyTypeProposalsAction</h4>
+                    <p>
+
+                    </p>
+                </section>
+                <section>
+                    <h4>CompletePropertyNameProposalsAction</h4>
+                    <p>
+
+                    </p>
+                </section>
+            </section>
+            <section>
+                <h3>Target Navigation</h3>
+                <p>
+                    HMF-LSP makes no assumption about the type of navigation a user may want to perform. Thus a generic infrastructure is 
+                    provided that the client and server can use to implement specific navigation types, e.g., navigation to documentation, 
+                    navigation to type declaration, navigation to some other element within the current model, navigation to a newly created 
+                    child node, etc. The type of navigation is identified by the <code>targetTypeId</code>.
+                </p>
+                <p>
+                    A client may request the targets for a specific type of navigation by querying the server to which the server will 
+                    respond with a set of navigation targets. A <code>NavigationTarget</code> identifies the object we want to navigate 
+                    to via its uri and may further provide a label to display for the client. Additionally, generic arguments may be used 
+                    to  encode any domain or navigation type-specific information. For example, a reference property may allow navigation 
+                    to the reference target, or the property-type definition that defined that node type.
+                </p>
+                <section>
+                    <h4>NavigationTarget</h4>
+                    <p>
+                        A <em>type</em> used during navigation to identify and resolve a <a>target</a>. 
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Type</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>uri</code></td>
+                                <td><code>String</code></td>
+                                <td>Required</td>
+                                <td>The URI representing the target to navigate to.</td>
+                            </tr>
+                            <tr>
+                                <td><code>label</code></td>
+                                <td><code>String</code></td>
+                                <td>Optional</td>
+                                <td>Optional label to display to the user..</td>
+                            </tr>
+                            <tr>
+                                <td><code>args</code></td>
+                                <td><code><a href="#args">Args</a></code></td>
+                                <td>Required</td>
+                                <td>Domain-specific arguments that may be interpreted directly or resolved further.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>  
+                <section>
+                    <h4>NavigateToExternalTargetAction</h4>
+                    <p>
+                        Triggers the navigation to a target not contained within the current model, such as another node
+                        or perhaps documentation resource. 
+                    </p>
+                    <table class="simple" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Type</th>
+                                <th>Mandatory Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>target</code></td>
+                                <td>NavigationTarget</td>
+                                <td>Required</td>
+                                <td>The editor-external target to which the client shall navigate.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>  
+            </section>
+
+           
+        </p>
+    </section>
+
+    <section>
+        <h2>Server Errors</h2>
+        RFC 7807
+        <p>
+            Server errors are sent from the server to the client to indicate some problem with a user 
+            request.  
+        </p>
+    </section>
+
+</body>
+
+</html>

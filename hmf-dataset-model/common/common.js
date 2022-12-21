@@ -1,4 +1,5 @@
 /* globals require */
+/* JSON-LD Working Group common spec JavaScript */
 
 /*
 * Implement tabbed examples.

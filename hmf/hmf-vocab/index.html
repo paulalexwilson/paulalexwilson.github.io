@@ -3,13 +3,13 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Linked Hierarchical Metadata Vocabulary</title>
+    <title>HMF JSON-LD Vocabulary - v1.0</title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
     <script src="../common/common.js" class="remove" defer></script>
     <script class="remove">
         // All config options at https://respec.org/docs/
         var respecConfig = {
-            shortName: "lhm-vocab",
+            shortName: "hmf-vocab",
             specStatus: "unofficial",
             editors: [{
                 name: "Paul Wilson"
@@ -51,9 +51,9 @@
     <section class="informative">
         <h2>LHM-vocab at a Glance</h2>
         <section>
-            <h3>Example LHM-vocab Document</h3>
+            <h3>Example HMF-vocab Document</h3>
             <p>
-                LHM-vocab provides a vocabulary to describe metadata graphs consisting of nodes,
+                HMF-vocab provides a vocabulary to describe metadata graphs consisting of nodes,
                 properties and references. Nodes represent metadata resources, properties
                 hold the data on those resources and references connect together related
                 nodes. Let's take a look at a single, isolated node:
@@ -70,14 +70,14 @@
                   },
                   "@id": "http://acme.com/content/ids/1",
                   "@type": "http://acme.com/content/types/SimpleNodetype",
-                  "lhm:created": "2022-03-13T17:12:26Z",
-                  "lhm:lastModified": "2022-03-13T18:12:26Z",
-                  "lhm:versionable": true,
-                  "lhm:versionHistory": "http://acme.com/version/1", 
-                  "lhm:schemas": [ "http://acme.com/schema/1" ],
-                  "lhm:title": "My Node Title",
-                  "lhm:parent": "http://acme.com/content/ids/0",
-                  "lhm:children": [
+                  "hmf:created": "2022-03-13T17:12:26Z",
+                  "hmf:lastModified": "2022-03-13T18:12:26Z",
+                  "hmf:versionable": true,
+                  "hmf:versionHistory": "http://acme.com/version/1", 
+                  "hmf:schemas": [ "http://acme.com/schema/1" ],
+                  "hmf:title": "My Node Title",
+                  "hmf:parent": "http://acme.com/content/ids/0",
+                  "hmf:children": [
                          "http://acme.com/content/ids/2",
                          "http://acme.com/content/ids/3"
                   ],
@@ -89,9 +89,9 @@
                 </pre>
             </aside>
             <p>
-                The example first illustrates that the <code>lhm</code> namespace provides structural
+                The example first illustrates that the <code>hmf</code> namespace provides structural
                 elements of a node such an identifier and type, references to children and parent nodes,
-                as well as references to the schema and its version history. It also provides common
+                as well as references to the schema and iI mts version history. It also provides common
                 metadata elements such as <code>created</code> and <code>createdBy</code>, and an
                 indication as to whether the node is <code>versionable</code>.
             </p>

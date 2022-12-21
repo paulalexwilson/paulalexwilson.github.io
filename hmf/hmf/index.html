@@ -8,7 +8,7 @@
 
     Todos:
     * Complete terms list 
-    * Formally define the namespace registry?
+    * Formally define the namespace registry? Or just a resource?
     * Remove versioned reference? might be unnecessary given that version is referenceable
 -->
 
@@ -41,18 +41,18 @@
                     "href": "https://json-ld.github.io/json-ld-star/",
                 }
             },
-            shortName: "HMF Model",
+            shortName: "HMF-Model",
             specStatus: "base",
             noRecTrack: true,
             authors: [{
-                name: "Paul Wilson"
+                name: "Paul A. Wilson"
             }, {
-                name: "Dave Clark"
+                name: "Dave J. Clark"
             }],
             editors: [{
-                name: "Paul Wilson"
+                name: "Paul A. Wilson"
             }, {
-                name: "Dave Clark"
+                name: "Dave J. Clark"
             }],
             xref: "web-platform",
             latestVersion: null,
@@ -61,6 +61,9 @@
     </script>
     <style src="../common/style.css" type="text/css"></style>
     <style type="text/css">
+        code {
+            color:#c63501
+        }
         .illustration {
             text-align: center;
         }
@@ -321,10 +324,10 @@
 
                 <p>
                     <a>Annotations</a> address the problem of how to capture additional information about
-                    the <a>properties</a> and <a>relationships</a> of a <a>node</a>. For example, a
-                    <a>node</a> may contain a <a>property</a> named <code>title</code> with a value,
-                    however we may want to record additional information such as certainty scores, weights,
-                    temporal restrictions, permissions and provenance information. Annotations solve
+                    the <a>properties</a> and <a>relationships</a> of a <a>node</a> that does not fit within the core domain 
+                    of a given HMF model. For example, a <a>node</a> may contain a <a>property</a> named 
+                    <code>title</code> with a value, however we may want to record additional information such as
+                    certainty scores, weights, temporal restrictions, permissions and provenance information. Annotations solve
                     this by providing <a>properties</a> <em>about <a>properties</a> or <a>relationships</a></em>.
                 </p>
                 <p>
@@ -405,9 +408,7 @@
         <section>
             <h3 id="resources">Resources</h3>
             <p>
-                A <a>resource</a> is anything in the metadata <a>tree</a> that can be referenced using an IRI including
-                <a>items</a> which may be located using a <a>path</a> or by following <a>references</a>. All
-                <a>entities</a> are resources.
+                A <a>resource</a> is anything within the HMF model which can be referenced using an IRI.
             </p>
             <div class="illustration">
                 <p><img src="resource-entity-venn.png" alt="Nodes" width="400" /></p>
@@ -470,7 +471,7 @@
             </section>
 
             <section>
-                <h3 id="node-names">Node Names</h3>
+                <h3 id="node-name">Node Names</h3>
                 <p>
                     Each <a>node</a> has a <a>name</a> used to locate the <a>node</a> among its siblings. The
                     <a>node</a> <a>name</a> is used within <a>paths</a> to allow <a>nodes</a> to be located without
@@ -486,7 +487,7 @@
                     compatibility with RDF. An <a>IRI</a> that relies on <a>location</a>
                     has different semantics to those that rely on <a>identity</a>. Holders of a <a>location IRI</a>
                     must be aware that the <a>referent</a> <a>resource</a> is not permanent and may resolve to a
-                    <a>resource</a> with a different <a>identity</a>. THis is in contrast to <a>identity IRIs</a>
+                    <a>resource</a> with a different <a>identity</a>. This is in contrast to <a>identity IRIs</a>
                     where holders are guaranteed to always resolve to the same <a>entity</a> unless it has been
                     deleted.
                 </p>
@@ -898,7 +899,7 @@
                 <p>
                     <a>Trees</a> allow <a>paths</a> to be used to locate a <a>node</a>. <a>Paths</a> can only
                     be used to traverse <em>parent-child</em> relationships and do not apply to <a>references</a>.
-                    <a>Nodes</a> can be referenced either using their identity or using their location as defined
+                    <a>Nodes</a> can be referenced either using their <a>identity</a> or using their location as defined
                     by their <a>path</a> from the <a>root</a> to the <a>node</a>.
                 </p>
                 <p>
@@ -1512,6 +1513,11 @@
                         </ul>
                     </p>
                 </section>
+                <section>
+                    <h4>Choice Lists</h4>
+                    <p>Allows a value to be contrainted to one of a finite list of possible choices.
+                    </p>
+                </section>
 
             </section>
             <section>
@@ -1710,6 +1716,12 @@
                                 HMF model. It exposes the mandatory property <code>hmf:primaryType</code>
                                 and the optional property <code>hmf:mixinTypes</code>. This is the only
                                 type in the model that does not itself extend another type.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>hmf:system</code></td>
+                            <td>
+                                Special node type for the <a>root node</a>.
                             </td>
                         </tr>
                         <tr>

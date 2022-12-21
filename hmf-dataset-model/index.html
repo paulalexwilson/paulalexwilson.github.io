@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>HMF Dataset Container Format - v1.0</title>
+    <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
+    <script src="../common/common.js" class="remove" defer></script>
+    <script class="remove">
+        // All config options at https://respec.org/docs/
+        var respecConfig = {
+            shortName: "hmf-dataset-model",
+            specStatus: "unofficial",
+            localBiblio: {
+                "HMF-Core-Model": {
+                    "title": "Hierarchical Metadata Framework - Core Model",
+                    "authors": [
+                        "Paul Wilson",
+                        "David Clark"
+                    ],
+                    "publisher": "HMF",
+                    "status": "Draft",
+                    "href": "../hmf/hmf/index.html",
+                    "editors": [
+                        "Paul Wilson",
+                        "David Clark"
+                    ],
+                    "date": "2022-02-18"
+                },
+            },
+            editors: [{
+                name: "Paul Wilson"
+            }, {
+                name: "David Clark"
+            }],
+            xref: "web-platform",
+            subtitle: "Storing and manipulating HMF graphs",
+        };
+    </script>
+    <style src="../common/style.css" type="text/css"></style>
+</head>
+
+<body>
+    <p class="copyright">Copyright ...</p>
+    <section id="abstract">
+        <p>
+            <a>Datasets</a> provide a means for capturing and representing production, contextual and provenance
+            information alongside the HMF tree metadata itself in such a way that it can be independently
+            processed by user interfaces, storage subsystems and event streams.
+        </p>
+        <p>
+            Datasets are <em>flattened</em> representations of HMF resource graphs, so it is up to the client
+            to frame them into a nested structure of their choosing.
+        </p>
+        <p>
+            Datasets used the concept of <a>named graphs</a> to capture supplementary information about
+            a metadata tree. Named graphs paritition data into well-defined and unambigous graphs which
+            can be independently processed or merged into a consolidate graphs as needed by downstream
+            systems either programmatically or using <a>frames</a>.
+        </p>
+        <p>
+            HMF <a>resources</a> (nodes, properties, types, namespaces and so on) are identified using an IRI
+            and multiple graphs may supply information about the same resource using that IRI.
+        </p>
+    </section>
+    <section id="sotd">
+
+    </section>
+    <h2>Terminology & Conventions</h2>
+    <section>
+        <h3>Terminology</h3>
+        <div data-include="./common/terms.html" data-oninclude="restrictReferences"></div>
+    </section>
+    <section class="informative">
+        <h2>Introduction</h2>
+        <p>
+            HMF datasets act as general purpose containers of HMF metadata for storage and transmission.
+            They solve several problems:
+            <ul>
+                <li>Partitioning Data</li>
+                <li>Describing Changesets</li>
+                <li>...</li>
+            </ul>
+        </p>
+        <p>
+            The HMF base representation is flattened.
+        </p>
+    </section>
+    <section class="informative">
+        <h2>References</h2>
+        <p>
+
+        </p>
+    </section>
+    <section class="informative">
+        <h2>Named Graphs</h2>
+        <p>
+            The following named graphs are supported:
+        </p>
+        <table class="simple" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Graph IRI</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>http://hmf.org/dataset/ns/graph/workingSubtree</td>
+                    <td>Supplies item-level information about a working subtree</td>
+                </tr>
+                <tr>
+                    <td>http://hmf.org/dataset/ns/graph/typeDefinitions</td>
+                    <td>Provides type-definition information about the items supplied in the <a>working subtree</a></td>
+                </tr>
+                <tr>
+                    <td>http://hmf.org/dataset/ns/graph/namespaceMappings</td>
+                    <td>Provides mappings and additional information about the namespaces used within the dataset</td>
+                </tr>
+                <tr>
+                    <td>http://hmf.org/dataset/ns/graph/version{id}</td>
+                    <td>Provides versioned state of versionables within a dataset</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+
+</html>

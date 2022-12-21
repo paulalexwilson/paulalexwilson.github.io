@@ -2,9 +2,7 @@ html {
     background-image: none !important;
 }
 
-code {
-    color:#c63501
-}
+
 
 .hlist {
     border: 1px solid navy;
@@ -38,6 +36,15 @@ code {
 
 .example>pre.context:before {
     content: "Context";
+    float: right;
+    font: x-large Arial, sans-serif;
+    color: gray;
+    border: solid thin black;
+    padding: 0.2em;
+}
+
+.example>pre.frame:before {
+    content: "Frame";
     float: right;
     font: x-large Arial, sans-serif;
     color: gray;
